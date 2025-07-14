@@ -90,7 +90,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUserWithInvalidId() {// тест изменения пользователя с указанием пустого и несуществующего id
+    void updateUserWithInvalidId() { // тест изменения пользователя с указанием пустого и несуществующего id
         User user = new User();
         user.setEmail("email@email.ru");
         user.setName("Name");
@@ -115,7 +115,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUserWithEmptyValues() {// тест изменения с указанием пустых email, login, name, birthday(должны быть заменены на начальные значения)
+    void updateUserWithEmptyValues() { // тест изменения с указанием пустых email, login, name, birthday(должны быть заменены на начальные значения)
         User user = new User();
         user.setEmail("email@email.ru");
         user.setName("Name");
