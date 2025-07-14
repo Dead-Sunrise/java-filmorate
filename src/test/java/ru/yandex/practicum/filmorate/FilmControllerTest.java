@@ -19,7 +19,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    void createCorrectFilmTest() {// тест добавления фильма с корректными данными
+    void createCorrectFilmTest() { // тест добавления фильма с корректными данными
         Film film = new Film();
         film.setDescription("Description");
         film.setName("Name");
@@ -31,7 +31,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    void createFilmWithExistingNameTest() {// тест добавления фильма с существующим названием
+    void createFilmWithExistingNameTest() { // тест добавления фильма с существующим названием
         Film film = new Film();
         film.setDescription("Description");
         film.setName("Name");
@@ -48,7 +48,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    void createFilmWithInvalidDurationAndReleaseDateTest() {// тест добавления фильмов с описанием в 201 символ и датой релиза раньше 28.12.1895
+    void createFilmWithInvalidDurationAndReleaseDateTest() { // тест добавления фильмов с описанием в 201 символ и датой релиза раньше 28.12.1895
         Film film = new Film();
         film.setDescription("Description............................................................................." +
                 "............................................................................................" +
@@ -68,7 +68,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    void updateCorrectFilm() {// тест изменения фильма с корректными данными
+    void updateCorrectFilm() { // тест изменения фильма с корректными данными
         Film film = new Film();
         film.setDescription("Description");
         film.setName("Name");
@@ -87,7 +87,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    void updateFilmWithInvalidId() {// тест изменения фильма с указанием пустого и несуществующего id
+    void updateFilmWithInvalidId() { // тест изменения фильма с указанием пустого и несуществующего id
         Film film = new Film();
         film.setDescription("Description");
         film.setName("Name");
@@ -112,7 +112,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    void updateFilmWithEmptyValues() {// тест изменения с указанием пустых name, description, releaseDate, duration(должны быть заменены на начальные значения)
+    void updateFilmWithEmptyValues() { // тест изменения с указанием пустых name, description, releaseDate, duration(должны быть заменены на начальные значения)
         Film film = new Film();
         film.setDescription("Description");
         film.setName("Name");
