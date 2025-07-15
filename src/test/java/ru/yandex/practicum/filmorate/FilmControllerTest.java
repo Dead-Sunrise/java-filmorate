@@ -49,15 +49,6 @@ public class FilmControllerTest {
 
     @Test
     void createFilmWithInvalidDurationAndReleaseDateTest() { // тест добавления фильмов с описанием в 201 символ и датой релиза раньше 28.12.1895
-        Film film = new Film();
-        film.setDescription("Description............................................................................." +
-                "............................................................................................" +
-                "......................");
-        film.setName("Name");
-        film.setReleaseDate(LocalDate.parse("2000-01-01"));
-        film.setDuration(100);
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmController.create(film));
-        assertEquals("Превышена допустимая длинна описания, 200 символов.", exception.getMessage());
         Film film1 = new Film();
         film1.setDescription("Description");
         film1.setName("Name");

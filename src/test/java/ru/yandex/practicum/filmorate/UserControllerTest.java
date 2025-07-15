@@ -31,18 +31,6 @@ public class UserControllerTest {
     }
 
     @Test
-    void createInvalidBirthdayUserTest() { //тест создания пользователя с датой рождения в будущем
-        User user = new User();
-        user.setEmail("email@email.ru");
-        user.setName("Name");
-        user.setLogin("Login");
-        user.setBirthday(LocalDate.parse("2026-01-01"));
-        ValidationException exception = assertThrows(ValidationException.class, () -> userController.create(user));
-        assertEquals("Дата рождения не может быть в будущем.", exception.getMessage());
-        assertEquals(0, userController.findAll().size());
-    }
-
-    @Test
     void createUserWithEmptyNameTest() { //тест создания пользователя с пустым именем(должно быть заменено на логин)
         User user = new User();
         user.setEmail("email@email.ru");
