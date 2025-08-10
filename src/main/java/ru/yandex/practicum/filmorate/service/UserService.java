@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -26,9 +25,6 @@ public class UserService {
     public void removeFriend(Long userId, Long friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
-        //if (!user.getFriends().contains(friendId)) {
-          //  throw new NotFoundException("Пользователя нет в списке друзей");
-        //}
         user.getFriends().remove(friendId);
         userStorage.update(user);
         friend.getFriends().remove(userId);
@@ -42,7 +38,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public Collection<User> getCommonFriends(Long userId, Long friendId){
+    public Collection<User> getCommonFriends(Long userId, Long friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
         return user.getFriends()
