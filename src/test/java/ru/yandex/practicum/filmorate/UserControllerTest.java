@@ -3,8 +3,11 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -15,7 +18,7 @@ public class UserControllerTest {
 
     @BeforeEach
     void newController() {
-        userController = new UserController();
+        userController = new UserController(new UserService(new InMemoryUserStorage()));
     }
 
     @Test
@@ -98,7 +101,7 @@ public class UserControllerTest {
         newUser1.setName("New name");
         newUser1.setLogin("New_login");
         newUser1.setBirthday(LocalDate.parse("2001-01-01"));
-        ValidationException exception2 = assertThrows(ValidationException.class, () -> userController.update(newUser1));
+        NotFoundException exception2 = assertThrows(NotFoundException.class, () -> userController.update(newUser1));
         assertEquals("Пользователь с id = " + newUser1.getId() + " не найден", exception2.getMessage());
     }
 
@@ -122,7 +125,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUserWithExistingEmail() { //тест обновления пользователя с существующим email
+    void updateUserWithExistingEmail() {//тест обновления пользователя с существующим email
         User user = new User();
         user.setEmail("email@email.ru");
         user.setName("Name");
@@ -136,7 +139,7 @@ public class UserControllerTest {
         user1.setBirthday(LocalDate.parse("2001-01-01"));
         userController.create(user1);
         User newUser1 = new User();
-        newUser1.setId(1L);
+        newUser1.setId(2L);
         newUser1.setEmail("email@email.ru");
         newUser1.setName("New name");
         newUser1.setLogin("New_login");
