@@ -125,7 +125,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUserWithExistingEmail() {//тест обновления пользователя с существующим email
+    void updateUserWithExistingEmail() { //тест обновления пользователя с существующим email
         User user = new User();
         user.setEmail("email@email.ru");
         user.setName("Name");
