@@ -39,6 +39,10 @@ public class InMemoryFilmStorage implements FilmStorage {
                     throw new ValidationException("Фильм с таким названием уже есть.");
                 }
             }
+            if (film.getReleaseDate() == null) {
+                log.error("Дата релиза не указана");
+                throw new ValidationException("Дата релиза не указана.");
+            }
             if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
                 log.error("Дата релиза раньше 28.12.1895: {}", film.getReleaseDate());
                 throw new ValidationException("Дата релиза не может быть раньше 28.12.1895.");
@@ -96,5 +100,13 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException("Фильм с id = " + filmId + " не найден");
         }
         return films.get(filmId);
+    }
+
+    @Override
+    public void deleteFilmById(Long filmId) {
+        if (filmId == null || !films.containsKey(filmId)) {
+            throw new NotFoundException("Фильм с таким id не найден.");
+        }
+        films.remove(filmId);
     }
 }

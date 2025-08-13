@@ -41,6 +41,10 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public Film getFilmById(Long filmId) {
+        return filmStorage.getFilmById(filmId);
+    }
+
     public Collection<Film> getAllFilms() {
         return filmStorage.findAll();
     }
