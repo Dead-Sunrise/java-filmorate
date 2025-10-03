@@ -27,20 +27,20 @@ public class FilmDbStorage implements FilmStorage {
     private final FilmRowMapper filmRowMapper;
     private final JdbcTemplate jdbcTemplate;
     private final GenreRowMapper genreRowMapper;
-    private final static String FIND_ALL_FILMS = """
+    private static final String FIND_ALL_FILMS = """
             SELECT f.*, m.name AS mpa_name
             FROM films f
             LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
             """;
 
-    private final static String FIND_FILM_BY_ID = """
+    private static final String FIND_FILM_BY_ID = """
             SELECT f.*, m.name AS mpa_name
             FROM films f
             LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
             WHERE f.id = ?
             """;
 
-    private final static String FIND_POPULAR_FILMS = """
+    private static final String FIND_POPULAR_FILMS = """
             SELECT f.*, m.name AS mpa_name, COUNT(fl.user_id) AS likes_count
             FROM films f
             LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
@@ -49,27 +49,27 @@ public class FilmDbStorage implements FilmStorage {
             ORDER BY likes_count DESC
             LIMIT ?
             """;
-    private final static String FIND_GENRES_BY_FILM_ID = """
+    private static final String FIND_GENRES_BY_FILM_ID = """
             SELECT g.* FROM genres g
             JOIN film_genre fg ON g.id = fg.genre_id
             WHERE fg.film_id = ?
             ORDER BY g.id""";
-    private final static String FIND_LIKES_BY_FILM_ID = """
+    private static final String FIND_LIKES_BY_FILM_ID = """
             SELECT user_id FROM film_likes
             WHERE film_id = ?""";
-    private final static String ADD_FILM = """
+    private static final String ADD_FILM = """
             INSERT INTO films(name, description, release_date, duration, mpa_id)
             VALUES (?, ?, ?, ?, ?)""";
-    private final static String ADD_FILM_GENRE = "INSERT INTO film_genre(film_id, genre_id) VALUES(?, ?)";
-    private final static String ADD_FILM_LIKE = "INSERT INTO film_likes(film_id, user_id) VALUES(?, ?)";
-    private final static String UPDATE_FILM = """
+    private static final String ADD_FILM_GENRE = "INSERT INTO film_genre(film_id, genre_id) VALUES(?, ?)";
+    private static final String ADD_FILM_LIKE = "INSERT INTO film_likes(film_id, user_id) VALUES(?, ?)";
+    private static final String UPDATE_FILM = """
             UPDATE films
             SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?
             WHERE id = ?""";
-    private final static String DELETE_FILM_BY_ID = "DELETE FROM films WHERE id = ?";
-    private final static String DELETE_ALL_FILMS = "DELETE FROM films";
-    private final static String DELETE_FILM_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
-    private final static String DELETE_FILM_LIKE = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?";
+    private static final String DELETE_FILM_BY_ID = "DELETE FROM films WHERE id = ?";
+    private static final String DELETE_ALL_FILMS = "DELETE FROM films";
+    private static final String DELETE_FILM_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
+    private static final String DELETE_FILM_LIKE = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?";
 
     @Override
     public Collection<Film> findAll() {

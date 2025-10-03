@@ -15,8 +15,8 @@ import java.util.Optional;
 public class MPADbStorage implements MPAStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MPARowMapper mpaRowMapper;
-    private final static String FIND_ALL_MPA = "SELECT * FROM mpa_ratings";
-    private final static String FIND_MPA_BY_ID = "SELECT * FROM mpa_ratings WHERE id = ?";
+    private static final String FIND_ALL_MPA = "SELECT * FROM mpa_ratings";
+    private static final String FIND_MPA_BY_ID = "SELECT * FROM mpa_ratings WHERE id = ?";
 
     @Override
     public Collection<RatingMPA> findAll() {

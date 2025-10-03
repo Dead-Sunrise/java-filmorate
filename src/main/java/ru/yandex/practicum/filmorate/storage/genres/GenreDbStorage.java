@@ -15,8 +15,8 @@ import java.util.Optional;
 public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreRowMapper genreRowMapper;
-    private final static String FIND_ALL_GENRES = "SELECT * FROM genres";
-    private final static String FIND_GENRE_BY_ID = "SELECT * FROM genres WHERE id = ?";
+    private static final String FIND_ALL_GENRES = "SELECT * FROM genres";
+    private static final String FIND_GENRE_BY_ID = "SELECT * FROM genres WHERE id = ?";
 
     @Override
     public Collection<Genre> findAll() {
