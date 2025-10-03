@@ -7,22 +7,19 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.films.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.users.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FilmControllerTest {
-    FilmController filmController;
+    InMemoryFilmStorage filmController;
 
     @BeforeEach
     void newController() {
-        filmController = new FilmController(
-                new FilmService(
-                        new InMemoryFilmStorage(),
-                        new InMemoryUserStorage()));
+        filmController = new InMemoryFilmStorage();
     }
 
     @Test

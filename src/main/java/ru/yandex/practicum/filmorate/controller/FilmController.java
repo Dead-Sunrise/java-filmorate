@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -18,7 +19,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Long id) {
+    public Optional<Film> getFilmById(@PathVariable Long id) {
         log.info("/films/{id} GET Запрос на получение данных конкретного фильма по id");
         return filmService.getFilmById(id);
     }

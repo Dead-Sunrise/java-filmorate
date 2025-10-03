@@ -1,25 +1,33 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class User {
-    Long id;
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class
+User {
+    private Long id;
     @Email
     @NotNull
     @NotBlank
-    String email;
+    private String email;
     @Pattern(regexp = "\\S+")
     @NotNull
     @NotBlank
-    String login;
-    String name;
+    private String login;
+    private String name;
     @PastOrPresent
-    LocalDate birthday;
-    Set<Long> friends = new HashSet<>();
+    private LocalDate birthday;
+    @Builder.Default
+    private Set<Long> friends = new HashSet<>();
 }

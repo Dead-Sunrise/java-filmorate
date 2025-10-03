@@ -2,58 +2,60 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.films.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserDbStorage;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class FilmService {
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final FilmDbStorage filmDbStorage;
+    private final UserDbStorage userDbStorage;
 
     public void putLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        User user = userStorage.getUserById(userId);
-        film.getLikes().add(user.getId());
-        filmStorage.update(film);
+        filmDbStorage.addLike(filmId, userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        if (!film.getLikes().contains(userId)) {
-            throw new NotFoundException("Лайк не поставлен.");
-        }
-        film.getLikes().remove(userId);
-        filmStorage.update(film);
+        filmDbStorage.deleteFilmLike(filmId, userId);
+    }
+
+    public void addFilmGenre(Long filmId, Long genreId) {
+        filmDbStorage.addFilmGenre(filmId, genreId);
+    }
+
+    public void removeFilmGenre(Long filmId) {
+        filmDbStorage.deleteFilmGenre(filmId);
     }
 
     public Collection<Film> getPopularFilms(int count) {
-        return filmStorage.findAll()
-                .stream()
-                .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmDbStorage.getPopularFilms(count);
     }
 
-    public Film getFilmById(Long filmId) {
-        return filmStorage.getFilmById(filmId);
+    public Optional<Film> getFilmById(Long filmId) {
+        return filmDbStorage.getFilmById(filmId);
     }
 
     public Collection<Film> getAllFilms() {
-        return filmStorage.findAll();
+        return filmDbStorage.findAll();
     }
 
     public Film createFilm(Film film) {
-        return filmStorage.create(film);
+        return filmDbStorage.create(film);
     }
 
     public Film updateFilm(Film newFilm) {
-        return filmStorage.update(newFilm);
+        return filmDbStorage.update(newFilm);
+    }
+
+    public void removeFilmById(Long filmId) {
+        filmDbStorage.deleteFilmById(filmId);
+    }
+
+    public void removeAllFilms() {
+        filmDbStorage.deleteAllFilms();
     }
 }

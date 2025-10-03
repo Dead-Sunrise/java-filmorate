@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.films;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -95,11 +96,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Long filmId) {
-        if (filmId == null || !films.containsKey(filmId)) {
+    public Optional<Film> getFilmById(Long filmId) {
+        if (films.containsKey(filmId)) {
             throw new NotFoundException("Фильм с id = " + filmId + " не найден");
         }
-        return films.get(filmId);
+        return Optional.ofNullable(films.get(filmId));
     }
 
     @Override

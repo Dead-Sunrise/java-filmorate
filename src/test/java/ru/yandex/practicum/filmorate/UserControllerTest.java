@@ -7,18 +7,18 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.users.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerTest {
-    UserController userController;
+    InMemoryUserStorage userController;
 
     @BeforeEach
     void newController() {
-        userController = new UserController(new UserService(new InMemoryUserStorage()));
+        userController = new InMemoryUserStorage();
     }
 
     @Test
