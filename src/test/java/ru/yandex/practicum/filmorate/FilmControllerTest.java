@@ -3,8 +3,12 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -15,7 +19,10 @@ public class FilmControllerTest {
 
     @BeforeEach
     void newController() {
-        filmController = new FilmController();
+        filmController = new FilmController(
+                new FilmService(
+                        new InMemoryFilmStorage(),
+                        new InMemoryUserStorage()));
     }
 
     @Test
@@ -98,7 +105,7 @@ public class FilmControllerTest {
         newFilm1.setName("New name");
         newFilm1.setReleaseDate(LocalDate.parse("2001-01-01"));
         newFilm1.setDuration(10);
-        ValidationException exception1 = assertThrows(ValidationException.class, () -> filmController.update(newFilm1));
+        NotFoundException exception1 = assertThrows(NotFoundException.class, () -> filmController.update(newFilm1));
         assertEquals("Фильм с id = " + newFilm1.getId() + " не найден.", exception1.getMessage());
     }
 
