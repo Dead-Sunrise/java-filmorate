@@ -39,7 +39,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void findAllUsersTest() {//Тест получения всех пользователей
+    void findAllUsersTest() { //Тест получения всех пользователей
         User user1 = User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")
@@ -63,7 +63,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void getUserByIdTest() {//Тест получения конкретного пользователя по id
+    void getUserByIdTest() { //Тест получения конкретного пользователя по id
         User user = userDbStorage.create(User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")
@@ -78,7 +78,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void getCommonFriendsTest() {//Тест получения списка общих друзей у двух пользователей
+    void getCommonFriendsTest() { //Тест получения списка общих друзей у двух пользователей
         User user1 = userDbStorage.create(User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")
@@ -109,7 +109,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void getFriendsTest() {//Тест получения списка друзей у пользователя
+    void getFriendsTest() { //Тест получения списка друзей у пользователя
         User user1 = userDbStorage.create(User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")
@@ -140,7 +140,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void createUserTest() {//Тест создания пользователя с пустым именем и датой рождения
+    void createUserTest() { //Тест создания пользователя с пустым именем и датой рождения
         User user = User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")
@@ -155,7 +155,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void updateUserTest() {//Тест обновления пользователя
+    void updateUserTest() { //Тест обновления пользователя
         User user = userDbStorage.create(User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")
@@ -176,7 +176,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void deleteFriendshipTest() {//Тест удаления пользователяя из друзей
+    void deleteFriendshipTest() { //Тест удаления пользователяя из друзей
         User user1 = userDbStorage.create(User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")
@@ -198,7 +198,7 @@ class UserDbStorageTest {
     }
 
     @Test
-    void deleteUserByIdTest() {//Тест удаления пользователя по id
+    void deleteUserByIdTest() { //Тест удаления пользователя по id
         User user = userDbStorage.create(User.builder()
                 .email("user1@mail.ru")
                 .login("Login1")

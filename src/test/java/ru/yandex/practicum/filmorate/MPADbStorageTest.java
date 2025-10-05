@@ -35,7 +35,7 @@ class MPADbStorageTest {
     }
 
     @Test
-    void findAllMpaTest() {//Тест получения всех мpa
+    void findAllMpaTest() { //Тест получения всех мpa
         Collection<RatingMPA> allMpa = mpaDbStorage.findAll();
         assertThat(allMpa).hasSize(3);
         assertThat(allMpa).extracting(RatingMPA::getName)
@@ -43,14 +43,14 @@ class MPADbStorageTest {
     }
 
     @Test
-    void getMPAByIdTest() {//Тест получения конкретного mpa по id
+    void getMPAByIdTest() { //Тест получения конкретного mpa по id
         Optional<RatingMPA> mpa = mpaDbStorage.getMPAById(1L);
         assertThat(mpa).isPresent();
         assertThat(mpa.get().getName()).isEqualTo("G");
     }
 
     @Test
-    void getMPAByInvalidId() {//Тест получения mpa с несуществующим id
+    void getMPAByInvalidId() { //Тест получения mpa с несуществующим id
         Optional<RatingMPA> mpa = mpaDbStorage.getMPAById(999L);
         assertThat(mpa).isEmpty();
     }

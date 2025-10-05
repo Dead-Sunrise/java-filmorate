@@ -46,7 +46,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void findAllFilmsTest() {//Тест получения всех фильмов
+    void findAllFilmsTest() { //Тест получения всех фильмов
         Film film1 = Film.builder()
                 .name("Film1")
                 .description("Description1")
@@ -68,7 +68,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void getFilmByIdTest() {//Тест получения конкретного фильма по id
+    void getFilmByIdTest() { //Тест получения конкретного фильма по id
         Film film = Film.builder()
                 .name("Film1")
                 .description("Description1")
@@ -82,7 +82,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void getPopularFilmsTest() {//Тест получения популярных фильмов по количеству лайков
+    void getPopularFilmsTest() { //Тест получения популярных фильмов по количеству лайков
         Film film1 = filmDbStorage.create(Film.builder()
                 .name("Film1")
                 .description("Description1")
@@ -125,7 +125,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void createFilmTest() {//Тест создания фильма(с null значениями, там где это допускается)
+    void createFilmTest() { //Тест создания фильма(с null значениями, там где это допускается)
         Film film = Film.builder()
                 .name("Film1")
                 .description(null)
@@ -142,7 +142,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void updateFilmTest() {//Тест обновления данных фильма
+    void updateFilmTest() { //Тест обновления данных фильма
         Film film = filmDbStorage.create(Film.builder()
                 .name("Film1")
                 .description("Description1")
@@ -164,7 +164,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void addLikeTest() {//Тест добавления лайка фильму
+    void addLikeTest() { //Тест добавления лайка фильму
         Film film = filmDbStorage.create(Film.builder()
                 .name("Film1")
                 .description("Description1")
@@ -184,7 +184,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void addFilmGenreTest() {//Тест добавления нового жанра фильму
+    void addFilmGenreTest() { //Тест добавления нового жанра фильму
         Film film = filmDbStorage.create(Film.builder()
                 .name("Film1")
                 .description("Description1")
@@ -197,7 +197,7 @@ class FilmDbStorageTest {
     }
 
     @Test
-    void deleteFilmByIdTest() {//Тест удаления фильма по id
+    void deleteFilmByIdTest() { //Тест удаления фильма по id
         Film film = filmDbStorage.create(Film.builder()
                 .name("Film1")
                 .description("Description1")

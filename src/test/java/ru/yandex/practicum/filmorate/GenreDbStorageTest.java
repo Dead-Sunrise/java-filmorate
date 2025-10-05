@@ -35,7 +35,7 @@ class GenreDbStorageTest {
     }
 
     @Test
-    void findAllGenresTest() {//Тест получения всех пользователей
+    void findAllGenresTest() { //Тест получения всех пользователей
         Collection<Genre> allGenres = genreDbStorage.findAll();
         assertThat(allGenres).hasSize(3);
         assertThat(allGenres).extracting(Genre::getName)
@@ -43,7 +43,7 @@ class GenreDbStorageTest {
     }
 
     @Test
-    void getGenreByIdTest() {//Тест получения конкретного пользователя по id
+    void getGenreByIdTest() { //Тест получения конкретного пользователя по id
         Optional<Genre> genre = genreDbStorage.getGenreById(1L);
         assertThat(genre).isPresent();
         assertThat(genre.get().getName()).isEqualTo("Комедия");
