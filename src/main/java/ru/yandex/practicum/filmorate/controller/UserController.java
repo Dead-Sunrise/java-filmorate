@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -19,26 +18,26 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         log.info("/users GET Запрос на получение списка пользователей.");
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable Long id) {
+    public User getUserById(@PathVariable Long id) {
         log.info("/users/{id} GET Запрос на получение данных конкретного пользователя по id");
         return userService.getUserById(id);
     }
 
     @GetMapping("/{id}/friends")
-    public Collection<User> getAllFriends(@PathVariable Long id) {
+    public List<User> getAllFriends(@PathVariable Long id) {
         log.info("/users/{id}/friends GET Запрос на получение списка друзей пользователя");
         return userService.getAllFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{friendId}")
-    public Collection<User> getCommonFriends(@PathVariable Long id,
-                                             @PathVariable Long friendId) {
+    public List<User> getCommonFriends(@PathVariable Long id,
+                                       @PathVariable Long friendId) {
         log.info("/users/{id}/friends/common/{friendId} GET Запрос на получение списка общих друзей двух пользователей");
         return userService.getCommonFriends(id, friendId);
     }

@@ -4,21 +4,21 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.RatingMPA;
-import ru.yandex.practicum.filmorate.storage.mpa.MPADbStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MPAStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class MPAService {
 
-    private final MPADbStorage mpaDbStorage;
+    private final MPAStorage mpaStorage;
 
-    public Collection<RatingMPA> getAllMpa() {
-        return mpaDbStorage.findAll();
+    public List<RatingMPA> getAllMpa() {
+        return mpaStorage.findAll().stream().toList();
     }
 
     public RatingMPA getMpaById(Long id) {
-        return mpaDbStorage.getMPAById(id).orElseThrow(() -> new NotFoundException("Рейтинг по id не найден"));
+        return mpaStorage.getMPAById(id).orElseThrow(() -> new NotFoundException("Рейтинг по id не найден"));
     }
 }

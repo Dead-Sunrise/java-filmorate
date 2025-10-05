@@ -2,60 +2,59 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.films.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.users.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class FilmService {
-    private final FilmDbStorage filmDbStorage;
-    private final UserDbStorage userDbStorage;
+    private final FilmStorage filmStorage;
 
     public void putLike(Long filmId, Long userId) {
-        filmDbStorage.addLike(filmId, userId);
+        filmStorage.addLike(filmId, userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
-        filmDbStorage.deleteFilmLike(filmId, userId);
+        filmStorage.deleteFilmLike(filmId, userId);
     }
 
     public void addFilmGenre(Long filmId, Long genreId) {
-        filmDbStorage.addFilmGenre(filmId, genreId);
+        filmStorage.addFilmGenre(filmId, genreId);
     }
 
     public void removeFilmGenre(Long filmId) {
-        filmDbStorage.deleteFilmGenre(filmId);
+        filmStorage.deleteFilmGenre(filmId);
     }
 
-    public Collection<Film> getPopularFilms(int count) {
-        return filmDbStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(int count) {
+        return filmStorage.getPopularFilms(count).stream().toList();
     }
 
-    public Optional<Film> getFilmById(Long filmId) {
-        return filmDbStorage.getFilmById(filmId);
+    public Film getFilmById(Long filmId) {
+        return filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
     }
 
-    public Collection<Film> getAllFilms() {
-        return filmDbStorage.findAll();
+    public List<Film> getAllFilms() {
+        return filmStorage.findAll().stream().toList();
     }
 
     public Film createFilm(Film film) {
-        return filmDbStorage.create(film);
+        return filmStorage.create(film);
     }
 
     public Film updateFilm(Film newFilm) {
-        return filmDbStorage.update(newFilm);
+        return filmStorage.update(newFilm);
     }
 
     public void removeFilmById(Long filmId) {
-        filmDbStorage.deleteFilmById(filmId);
+        filmStorage.deleteFilmById(filmId);
     }
 
     public void removeAllFilms() {
-        filmDbStorage.deleteAllFilms();
+        filmStorage.deleteAllFilms();
     }
 }

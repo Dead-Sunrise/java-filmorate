@@ -131,7 +131,11 @@ public class FilmDbStorage implements FilmStorage {
             PreparedStatement preparedStatement = connection.prepareStatement(ADD_FILM, new String[]{"id"});
             preparedStatement.setString(1, film.getName());
             preparedStatement.setString(2, film.getDescription());
-            preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
+            if (film.getReleaseDate() != null) {
+                preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
+            } else {
+                preparedStatement.setNull(3, Types.DATE);
+            }
             preparedStatement.setInt(4, film.getDuration());
             if (film.getMpa() != null) {
                 preparedStatement.setLong(5, film.getMpa().getId());
@@ -155,9 +159,9 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(UPDATE_FILM,
                 film.getName(),
                 film.getDescription(),
-                film.getReleaseDate(),
+                film.getReleaseDate() != null ? Date.valueOf(film.getReleaseDate()) : null,
                 film.getDuration(),
-                film.getMpa().getId(),
+                film.getMpa() != null ? film.getMpa().getId() : null,
                 film.getId());
         updateFilmGenres(film.getId(), film.getGenres());
         return getFilmById(film.getId())

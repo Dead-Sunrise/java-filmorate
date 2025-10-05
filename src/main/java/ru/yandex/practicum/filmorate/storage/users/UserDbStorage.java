@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.mappers.UserRowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.*;
 
 @Repository
@@ -98,7 +99,11 @@ public class UserDbStorage implements UserStorage {
             preparedStatement.setString(1, user.getEmail());
             preparedStatement.setString(2, user.getLogin());
             preparedStatement.setString(3, user.getName());
-            preparedStatement.setDate(4, Date.valueOf(user.getBirthday()));
+            if (user.getBirthday() != null) {
+                preparedStatement.setDate(4, Date.valueOf(user.getBirthday()));
+            } else {
+                preparedStatement.setNull(4, Types.DATE);
+            }
             return preparedStatement;
         }, keyHolder);
         user.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
@@ -126,7 +131,12 @@ public class UserDbStorage implements UserStorage {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        jdbcTemplate.update(UPDATE_USER, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        jdbcTemplate.update(UPDATE_USER,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday() != null ? Date.valueOf(user.getBirthday()) : null,
+                user.getId());
         return user;
     }
 

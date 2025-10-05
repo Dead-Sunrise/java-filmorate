@@ -2,51 +2,52 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.users.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserDbStorage userDbStorage;
+    private final UserStorage userStorage;
 
 
     public void addFriend(Long userId, Long friendId) {
-        userDbStorage.addFriendship(userId, friendId);
+        userStorage.addFriendship(userId, friendId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        userDbStorage.deleteFriendship(userId, friendId);
+        userStorage.deleteFriendship(userId, friendId);
     }
 
-    public Collection<User> getAllFriends(Long userId) {
-        return userDbStorage.getFriends(userId);
+    public List<User> getAllFriends(Long userId) {
+        return userStorage.getFriends(userId).stream().toList();
     }
 
-    public Collection<User> getCommonFriends(Long userId, Long friendId) {
-        return userDbStorage.getCommonFriends(userId, friendId);
+    public List<User> getCommonFriends(Long userId, Long friendId) {
+        return userStorage.getCommonFriends(userId, friendId).stream().toList();
     }
 
     public void removeAllUsers() {
-        userDbStorage.deleteAllUsers();
+        userStorage.deleteAllUsers();
     }
 
-    public Collection<User> getAllUsers() {
-        return userDbStorage.findAll();
+    public List<User> getAllUsers() {
+        return userStorage.findAll().stream().toList();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userDbStorage.getUserById(id);
+    public User getUserById(Long id) {
+        return userStorage.getUserById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + id + " не найден"));
     }
 
     public User createUser(User user) {
-        return userDbStorage.create(user);
+        return userStorage.create(user);
     }
 
     public User updateUser(User newUser) {
-        return userDbStorage.update(newUser);
+        return userStorage.update(newUser);
     }
 }
