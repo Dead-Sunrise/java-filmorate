@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,3 +28,4 @@ public class TestController {
         jdbcTemplate.update("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
     }
 }
+
