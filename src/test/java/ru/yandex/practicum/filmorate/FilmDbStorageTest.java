@@ -117,7 +117,7 @@ class FilmDbStorageTest {
                 .build());
         filmDbStorage.addLike(film1.getId(), user1.getId());
         filmDbStorage.addLike(film1.getId(), user2.getId());
-        filmDbStorage.addLike(film2.getId(), 1L);
+        filmDbStorage.addLike(film2.getId(), user1.getId());
         Collection<Film> popularFilms = filmDbStorage.getPopularFilms(2);
         assertThat(popularFilms).hasSize(2);
         assertThat(popularFilms).extracting(Film::getName)
