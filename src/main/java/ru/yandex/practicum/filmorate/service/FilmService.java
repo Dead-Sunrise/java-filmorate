@@ -4,49 +4,42 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
 
     public void putLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        User user = userStorage.getUserById(userId);
-        film.getLikes().add(user.getId());
-        filmStorage.update(film);
+        filmStorage.addLike(filmId, userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        if (!film.getLikes().contains(userId)) {
-            throw new NotFoundException("Лайк не поставлен.");
-        }
-        film.getLikes().remove(userId);
-        filmStorage.update(film);
+        filmStorage.deleteFilmLike(filmId, userId);
     }
 
-    public Collection<Film> getPopularFilms(int count) {
-        return filmStorage.findAll()
-                .stream()
-                .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+    public void addFilmGenre(Long filmId, Long genreId) {
+        filmStorage.addFilmGenre(filmId, genreId);
+    }
+
+    public void removeFilmGenre(Long filmId) {
+        filmStorage.deleteFilmGenre(filmId);
+    }
+
+    public List<Film> getPopularFilms(int count) {
+        return filmStorage.getPopularFilms(count).stream().toList();
     }
 
     public Film getFilmById(Long filmId) {
-        return filmStorage.getFilmById(filmId);
+        return filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
     }
 
-    public Collection<Film> getAllFilms() {
-        return filmStorage.findAll();
+    public List<Film> getAllFilms() {
+        return filmStorage.findAll().stream().toList();
     }
 
     public Film createFilm(Film film) {
@@ -55,5 +48,13 @@ public class FilmService {
 
     public Film updateFilm(Film newFilm) {
         return filmStorage.update(newFilm);
+    }
+
+    public void removeFilmById(Long filmId) {
+        filmStorage.deleteFilmById(filmId);
+    }
+
+    public void removeAllFilms() {
+        filmStorage.deleteAllFilms();
     }
 }

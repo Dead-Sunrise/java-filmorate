@@ -1,0 +1,6 @@
+- name: Run Postman tests
+  run: |
+    /tmp/wait-for-it.sh -t 60 localhost:8080
+    curl -X POST http://localhost:8080/test/reset
+    sleep 3
+    newman run ./tests/postman/sprint.json --delay-request 50 ...
