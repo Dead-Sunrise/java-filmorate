@@ -57,6 +57,14 @@ public class FilmDbStorage implements FilmStorage {
     private static final String FIND_LIKES_BY_FILM_ID = """
             SELECT user_id FROM film_likes
             WHERE film_id = ?""";
+    private static final String FIND_COMMON_FILMS = """
+            SELECT f.*, m.name AS mpa_name
+            FROM films f
+            JOIN mpa_ratings m ON f.mpa_id = m.id
+            WHERE f.id IN (SELECT film_id FROM film_likes WHERE user_id = ?)
+            AND f.id IN (SELECT film_id FROM film_likes WHERE user_id = ?)
+            ORDER BY (SELECT COUNT(*) FROM film_likes WHERE film_id = f.id) DESC
+            """;
     private static final String ADD_FILM = """
             INSERT INTO films(name, description, release_date, duration, mpa_id)
             VALUES (?, ?, ?, ?, ?)""";
@@ -96,6 +104,21 @@ public class FilmDbStorage implements FilmStorage {
         films.forEach(this::loadFilmDetails);
         return films;
     }
+
+    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+        try {
+            if (!userExists(userId) || !userExists(friendId)) {
+                throw new NotFoundException("Один из пользователей не найден.");
+            }
+            List<Film> films = jdbcTemplate.query(FIND_COMMON_FILMS, filmRowMapper, userId, friendId);
+            films.forEach(this::loadFilmDetails);
+            return films;
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    ;
 
     public void addFilmGenre(Long filmId, Long genreId) {
         if (!filmExists(filmId)) {

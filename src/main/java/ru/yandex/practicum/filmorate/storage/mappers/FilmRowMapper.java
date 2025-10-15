@@ -33,6 +33,5 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .duration(rs.getInt("duration"))
                 .mpa(mpa)
                 .build();
-
     }
 }
