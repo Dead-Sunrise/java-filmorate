@@ -35,6 +35,15 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam("userId") Long userId,
+                                     @RequestParam("friendId") Long friendId) {
+        log.info("""
+                /films/common?userId={userId}&friendId={friendId}
+                GET Запрос на получение общих фильмов пользователей с ID {} и {}""", userId, friendId);
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("/films POST Запрос на добавление нового фильма");

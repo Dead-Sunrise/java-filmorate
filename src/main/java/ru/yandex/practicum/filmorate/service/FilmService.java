@@ -33,6 +33,10 @@ public class FilmService {
         return filmStorage.getPopularFilms(count).stream().toList();
     }
 
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        return filmStorage.getCommonFilms(userId, friendId).stream().toList();
+    }
+
     public Film getFilmById(Long filmId) {
         return filmStorage.getFilmById(filmId)
                 .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден"));
