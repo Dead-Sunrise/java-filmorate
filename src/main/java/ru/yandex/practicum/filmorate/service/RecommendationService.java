@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.users.UserStorage;
@@ -18,7 +19,7 @@ public class RecommendationService {
 
     public List<Film> getRecommendations(Long userId) {
         if (userStorage.getUserById(userId).isEmpty()) {
-            return List.of();
+            throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }
 
         Map<Long, Set<Long>> userLikesMap = userStorage.getAllUserLikes();
