@@ -10,9 +10,15 @@ public interface FilmStorage {
 
     Optional<Film> getFilmById(Long filmId);
 
-    Collection<Film> getPopularFilms(Integer count);
-
     Collection<Film> getCommonFilms(Long userId, Long friendId);
+
+    Collection<Film> getPopularFilmsByGenreAndYear(int count, Long genreId, Integer year);
+
+    Collection<Film> getPopularFilmsByGenre(int count, Long genreId);
+
+    Collection<Film> getPopularFilmsByYear(int count, Integer year);
+
+    Collection<Film> getPopularFilms(Integer count);
 
     void addFilmGenre(Long filmId, Long genreId);
 

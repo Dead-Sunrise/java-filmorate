@@ -49,6 +49,42 @@ public class FilmDbStorage implements FilmStorage {
             ORDER BY likes_count DESC
             LIMIT ?
             """;
+
+    private static final String FIND_POPULAR_FILMS_BY_YEAR = """
+            SELECT f.*, m.name AS mpa_name, COUNT(DISTINCT fl.user_id) AS likes_count
+            FROM films f
+            JOIN mpa_ratings m ON f.mpa_id = m.id
+            LEFT JOIN film_likes fl ON f.id = fl.film_id
+            WHERE EXTRACT(YEAR FROM f.release_date) = ?
+            GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name
+            ORDER BY likes_count DESC
+            LIMIT ?
+            """;
+
+    private static final String FIND_POPULAR_FILMS_BY_GENRE = """
+            SELECT f.*, m.name AS mpa_name, COUNT(DISTINCT fl.user_id) AS likes_count
+            FROM films f
+            JOIN mpa_ratings m ON f.mpa_id = m.id
+            LEFT JOIN film_likes fl ON f.id = fl.film_id
+            JOIN film_genre fg ON f.id = fg.film_id AND fg.genre_id = ?
+            GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name
+            ORDER BY likes_count DESC
+            LIMIT ?
+            """;
+
+    private static final String FIND_POPULAR_FILMS_BY_GENRE_AND_YEAR = """
+            SELECT f.*, m.name AS mpa_name, COUNT(DISTINCT fl.user_id) AS likes_count
+            FROM films f
+            JOIN mpa_ratings m ON f.mpa_id = m.id
+            LEFT JOIN film_likes fl ON f.id = fl.film_id
+            JOIN film_genre fg ON f.id = fg.film_id
+            WHERE fg.genre_id = ?
+            AND EXTRACT(YEAR FROM f.release_date) = ?
+            GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name
+            ORDER BY likes_count DESC
+            LIMIT ?
+            """;
+
     private static final String FIND_GENRES_BY_FILM_ID = """
             SELECT g.* FROM genres g
             JOIN film_genre fg ON g.id = fg.genre_id
@@ -99,6 +135,24 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    public Collection<Film> getPopularFilmsByGenre(int count, Long genreId) {
+        List<Film> films = jdbcTemplate.query(FIND_POPULAR_FILMS_BY_GENRE, filmRowMapper, genreId, count);
+        films.forEach(this::loadFilmDetails);
+        return films;
+    }
+
+    public Collection<Film> getPopularFilmsByYear(int count, Integer year) {
+        List<Film> films = jdbcTemplate.query(FIND_POPULAR_FILMS_BY_YEAR, filmRowMapper, year, count);
+        films.forEach(this::loadFilmDetails);
+        return films;
+    }
+
+    public Collection<Film> getPopularFilmsByGenreAndYear(int count, Long genreId, Integer year) {
+        List<Film> films = jdbcTemplate.query(FIND_POPULAR_FILMS_BY_GENRE_AND_YEAR, filmRowMapper,genreId, year, count);
+        films.forEach(this::loadFilmDetails);
+        return films;
+    }
+
     public Collection<Film> getPopularFilms(Integer count) {
         List<Film> films = jdbcTemplate.query(FIND_POPULAR_FILMS, filmRowMapper, count);
         films.forEach(this::loadFilmDetails);
@@ -117,8 +171,6 @@ public class FilmDbStorage implements FilmStorage {
             return Collections.emptyList();
         }
     }
-
-    ;
 
     public void addFilmGenre(Long filmId, Long genreId) {
         if (!filmExists(filmId)) {

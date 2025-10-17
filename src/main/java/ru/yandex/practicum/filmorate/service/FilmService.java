@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 
@@ -29,8 +30,21 @@ public class FilmService {
         filmStorage.deleteFilmGenre(filmId);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count).stream().toList();
+    public List<Film> getPopularFilms(int count, Long genreId, Integer year) {
+        if (count <= 0) {
+            throw new ValidationException("Количество фильмов должно быть положительным числом.");
+        }
+        List<Film> popularFilms;
+        if (genreId != null && year != null) {
+            popularFilms = filmStorage.getPopularFilmsByGenreAndYear(count, genreId, year).stream().toList();
+        } else if (genreId != null) {
+            popularFilms = filmStorage.getPopularFilmsByGenre(count, genreId).stream().toList();
+        } else if (year != null) {
+            popularFilms = filmStorage.getPopularFilmsByYear(count, year).stream().toList();
+        } else {
+            popularFilms = filmStorage.getPopularFilms(count).stream().toList();
+        }
+        return popularFilms;
     }
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {
