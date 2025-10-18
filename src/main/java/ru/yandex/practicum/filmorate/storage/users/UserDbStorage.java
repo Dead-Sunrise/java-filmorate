@@ -142,12 +142,12 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Map<Long, Set<Long>> getAllUserLikes() {
-        Map<Long, Set<Long>> userLikesMap = new HashMap<>();
+    public Map<Long, List<Long>> getAllUserLikes() {
+        Map<Long, List<Long>> userLikesMap = new HashMap<>();
         jdbcTemplate.query(ALL_USER_LIKES, rs -> {
             Long userId = rs.getLong("user_id");
             Long filmId = rs.getLong("film_id");
-            userLikesMap.computeIfAbsent(userId, key -> new HashSet<>()).add(filmId);
+            userLikesMap.computeIfAbsent(userId, key -> new ArrayList<>()).add(filmId);
         });
 
         return userLikesMap;

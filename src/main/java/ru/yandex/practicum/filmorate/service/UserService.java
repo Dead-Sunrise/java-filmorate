@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class UserService {
         return userStorage.getCommonFriends(userId, friendId).stream().toList();
     }
 
-    public Map<Long, Set<Long>> getAllUserLikes() {
+    public Map<Long, List<Long>> getAllUserLikes() {
         return userStorage.getAllUserLikes();
     }
 

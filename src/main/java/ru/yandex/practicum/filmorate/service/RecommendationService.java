@@ -22,18 +22,18 @@ public class RecommendationService {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }
 
-        Map<Long, Set<Long>> userLikesMap = userStorage.getAllUserLikes();
-        Set<Long> likedFilms = userLikesMap.getOrDefault(userId, Set.of());
+        Map<Long, List<Long>> userLikesMap = userStorage.getAllUserLikes();
+        List<Long> likedFilms = userLikesMap.getOrDefault(userId, List.of());
 
         Long similarUserId = null;
         int maxIntersection = 0;
 
-        for (Map.Entry<Long, Set<Long>> entry : userLikesMap.entrySet()) {
+        for (Map.Entry<Long, List<Long>> entry : userLikesMap.entrySet()) {
             Long otherUserId = entry.getKey();
             if (Objects.equals(userId, otherUserId))
                 continue;
 
-            Set<Long> otherLikes = entry.getValue();
+            List<Long> otherLikes = entry.getValue();
             Set<Long> intersection = new HashSet<>(likedFilms);
             intersection.retainAll(otherLikes);
 
@@ -43,12 +43,12 @@ public class RecommendationService {
             }
         }
 
-        if (similarUserId == null || maxIntersection == 0) {
+        if (similarUserId == null) {
             return List.of();
         }
 
         Set<Long> unseenLikedFilms = new HashSet<>(userLikesMap.get(similarUserId));
-        unseenLikedFilms.removeAll(likedFilms);
+        likedFilms.forEach(unseenLikedFilms::remove);
 
         return unseenLikedFilms.stream()
                 .map(filmStorage::getFilmById)
