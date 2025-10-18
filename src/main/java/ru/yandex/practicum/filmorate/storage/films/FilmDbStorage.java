@@ -120,6 +120,7 @@ public class FilmDbStorage implements FilmStorage {
             return Collections.emptyList();
         }
     }
+
     ;
 
     private static final String FIND_GENRES_BY_FILM_ID = """
@@ -262,9 +263,7 @@ public class FilmDbStorage implements FilmStorage {
                 ps.setNull(5, Types.INTEGER);
             }
 
-            Long directorId = (film.getDirectors() != null && !film.getDirectors().isEmpty())
-                    ? Long.valueOf(film.getDirectors().iterator().next().getId())
-                    : null;
+            Long directorId = (film.getDirectors() != null && !film.getDirectors().isEmpty()) ? Long.valueOf(film.getDirectors().iterator().next().getId()) : null;
 
             ps.setObject(6, directorId, Types.BIGINT);
             ps.setLong(7, film.getId());
@@ -273,8 +272,7 @@ public class FilmDbStorage implements FilmStorage {
 
         updateFilmGenres(film.getId(), film.getGenres());
 
-        return getFilmById(film.getId())
-                .orElseThrow(() -> new NotFoundException("Фильм не найден после обновления"));
+        return getFilmById(film.getId()).orElseThrow(() -> new NotFoundException("Фильм не найден после обновления"));
     }
 
     @Override

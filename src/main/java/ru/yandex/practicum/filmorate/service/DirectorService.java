@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 
 import java.util.Collection;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor

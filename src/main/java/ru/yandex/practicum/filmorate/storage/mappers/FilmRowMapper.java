@@ -34,14 +34,6 @@ public class FilmRowMapper implements RowMapper<Film> {
 
         Set<Director> directors = (director != null) ? Set.of(director) : Collections.emptySet();
 
-        return Film.builder()
-                .id(rs.getLong("film_id"))
-                .name(rs.getString("film_name"))
-                .description(rs.getString("description"))
-                .releaseDate(releaseLocalDate)
-                .duration(rs.getInt("duration"))
-                .mpa(mpa)
-                .directors(directors)
-                .build();
+        return Film.builder().id(rs.getLong("film_id")).name(rs.getString("film_name")).description(rs.getString("description")).releaseDate(releaseLocalDate).duration(rs.getInt("duration")).mpa(mpa).directors(directors).build();
     }
 }
