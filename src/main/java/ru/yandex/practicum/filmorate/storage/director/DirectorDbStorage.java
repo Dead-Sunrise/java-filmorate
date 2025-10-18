@@ -5,10 +5,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.storage.mappers.DirectorRowMapper;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -44,23 +43,19 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Optional<Director> getById(int id) {
-        List<Director> list = jdbcTemplate.query("SELECT * FROM directors WHERE director_id=?", this::mapRowToDirector, id);
+        List<Director> list = jdbcTemplate.query("SELECT * FROM directors WHERE director_id=?", new DirectorRowMapper(), id);
         if (list.isEmpty()) return Optional.empty();
         return Optional.of(list.get(0));
     }
 
     @Override
     public Collection<Director> getAll() {
-        return jdbcTemplate.query("SELECT * FROM directors", this::mapRowToDirector);
+        return jdbcTemplate.query("SELECT * FROM directors", new DirectorRowMapper());
     }
 
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM directors WHERE director_id=?";
         jdbcTemplate.update(sql, id);
-    }
-
-    private Director mapRowToDirector(ResultSet rs, int rowNum) throws SQLException {
-        return new Director(rs.getInt("director_id"), rs.getString("name"));
     }
 }

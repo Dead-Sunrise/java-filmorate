@@ -58,21 +58,6 @@ public class FilmDbStorage implements FilmStorage {
                 LIMIT ?
             """;
 
-    @Override
-    public List<Film> findFilmsByDirector(Long directorId) {
-        String sql = """
-                    SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
-                           f.mpa_id, d.director_id AS director_id, d.name AS director_name, m.name AS mpa_name
-                    FROM films f
-                    LEFT JOIN directors d ON f.director_id = d.director_id
-                    LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
-                    WHERE d.director_id = ?
-                """;
-        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        films.forEach(this::loadFilmDetails);
-        return films;
-    }
-
     private static final String FIND_COMMON_FILMS = """
             SELECT f.*, m.name AS mpa_name
             FROM films f
@@ -81,19 +66,6 @@ public class FilmDbStorage implements FilmStorage {
             AND f.id IN (SELECT film_id FROM film_likes WHERE user_id = ?)
             ORDER BY (SELECT COUNT(*) FROM film_likes WHERE film_id = f.id) DESC
             """;
-
-    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
-        try {
-            if (!userExists(userId) || !userExists(friendId)) {
-                throw new NotFoundException("Один из пользователей не найден.");
-            }
-            List<Film> films = jdbcTemplate.query(FIND_COMMON_FILMS, filmRowMapper, userId, friendId);
-            films.forEach(this::loadFilmDetails);
-            return films;
-        } catch (EmptyResultDataAccessException e) {
-            return Collections.emptyList();
-        }
-    }
 
     private static final String FIND_GENRES_BY_FILM_ID = """
             SELECT g.* FROM genres g
@@ -268,6 +240,34 @@ public class FilmDbStorage implements FilmStorage {
 
     public void deleteFilmLike(Long filmId, Long userId) {
         jdbcTemplate.update(DELETE_FILM_LIKE, filmId, userId);
+    }
+
+    @Override
+    public List<Film> findFilmsByDirector(Long directorId) {
+        String sql = """
+                    SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+                           f.mpa_id, d.director_id AS director_id, d.name AS director_name, m.name AS mpa_name
+                    FROM films f
+                    LEFT JOIN directors d ON f.director_id = d.director_id
+                    LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
+                    WHERE d.director_id = ?
+                """;
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
+        films.forEach(this::loadFilmDetails);
+        return films;
+    }
+
+    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+        try {
+            if (!userExists(userId) || !userExists(friendId)) {
+                throw new NotFoundException("Один из пользователей не найден.");
+            }
+            List<Film> films = jdbcTemplate.query(FIND_COMMON_FILMS, filmRowMapper, userId, friendId);
+            films.forEach(this::loadFilmDetails);
+            return films;
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 
     private void loadFilmDetails(Film film) {
