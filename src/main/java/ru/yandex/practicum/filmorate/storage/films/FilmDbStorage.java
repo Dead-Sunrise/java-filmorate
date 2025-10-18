@@ -29,32 +29,15 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreRowMapper genreRowMapper;
 
     private static final String FIND_ALL_FILMS = """
-                SELECT 
-                    f.id AS film_id, 
-                    f.name AS film_name, 
-                    f.description, 
-                    f.release_date, 
-                    f.duration,
-                    f.mpa_id, 
-                    d.director_id, 
-                    d.name AS director_name, 
-                    m.name AS mpa_name
+                SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+                    f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
                 FROM films f
                 LEFT JOIN directors d ON f.director_id = d.director_id
                 LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
             """;
 
     private static final String FIND_FILM_BY_ID = """
-                SELECT 
-                    f.id AS film_id, 
-                    f.name AS film_name, 
-                    f.description, 
-                    f.release_date, 
-                    f.duration,
-                    f.mpa_id, 
-                    d.director_id, 
-                    d.name AS director_name, 
-                    m.name AS mpa_name
+                SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
                 FROM films f
                 LEFT JOIN directors d ON f.director_id = d.director_id
                 LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
@@ -62,23 +45,14 @@ public class FilmDbStorage implements FilmStorage {
             """;
 
     private static final String FIND_POPULAR_FILMS = """
-                SELECT 
-                    f.id AS film_id, 
-                    f.name AS film_name, 
-                    f.description, 
-                    f.release_date, 
-                    f.duration,
-                    f.mpa_id, 
-                    d.director_id, 
-                    d.name AS director_name, 
-                    m.name AS mpa_name,
+                SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+                    f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name,
                     COUNT(fl.user_id) AS likes_count
                 FROM films f
                 LEFT JOIN directors d ON f.director_id = d.director_id
                 LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
                 LEFT JOIN film_likes fl ON f.id = fl.film_id
-                GROUP BY 
-                    f.id, f.name, f.description, f.release_date, f.duration,
+                GROUP BY f.id, f.name, f.description, f.release_date, f.duration,
                     f.mpa_id, d.director_id, d.name, m.name
                 ORDER BY likes_count DESC
                 LIMIT ?
@@ -120,8 +94,6 @@ public class FilmDbStorage implements FilmStorage {
             return Collections.emptyList();
         }
     }
-
-    ;
 
     private static final String FIND_GENRES_BY_FILM_ID = """
             SELECT g.* FROM genres g
@@ -264,7 +236,6 @@ public class FilmDbStorage implements FilmStorage {
             }
 
             Long directorId = (film.getDirectors() != null && !film.getDirectors().isEmpty()) ? Long.valueOf(film.getDirectors().iterator().next().getId()) : null;
-
             ps.setObject(6, directorId, Types.BIGINT);
             ps.setLong(7, film.getId());
             return ps;
