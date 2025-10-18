@@ -118,8 +118,6 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    ;
-
     public void addFilmGenre(Long filmId, Long genreId) {
         if (!filmExists(filmId)) {
             throw new NotFoundException("Фильм с ID " + filmId + " не найден");

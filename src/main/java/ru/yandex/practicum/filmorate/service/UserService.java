@@ -30,6 +30,10 @@ public class UserService {
         return userStorage.getCommonFriends(userId, friendId).stream().toList();
     }
 
+    public void removeUserById(Long id) {
+        userStorage.deleteUserById(id);
+    }
+
     public void removeAllUsers() {
         userStorage.deleteAllUsers();
     }
