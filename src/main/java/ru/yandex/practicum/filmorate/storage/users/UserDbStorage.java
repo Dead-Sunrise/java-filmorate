@@ -51,6 +51,7 @@ public class UserDbStorage implements UserStorage {
     private static final String CHECK_FRIENDSHIP_EXISTS = """
             SELECT COUNT(*) FROM friends
             WHERE user_id = ? AND friend_id = ?""";
+    private static final String ALL_USER_LIKES = "SELECT user_id, film_id FROM film_likes";
 
 
     @Override
@@ -138,6 +139,18 @@ public class UserDbStorage implements UserStorage {
                 user.getBirthday() != null ? Date.valueOf(user.getBirthday()) : null,
                 user.getId());
         return user;
+    }
+
+    @Override
+    public Map<Long, List<Long>> getAllUserLikes() {
+        Map<Long, List<Long>> userLikesMap = new HashMap<>();
+        jdbcTemplate.query(ALL_USER_LIKES, rs -> {
+            Long userId = rs.getLong("user_id");
+            Long filmId = rs.getLong("film_id");
+            userLikesMap.computeIfAbsent(userId, key -> new ArrayList<>()).add(filmId);
+        });
+
+        return userLikesMap;
     }
 
     public void deleteFriendship(Long userId, Long friendId) {

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.films;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -118,8 +119,6 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    ;
-
     public void addFilmGenre(Long filmId, Long genreId) {
         if (!filmExists(filmId)) {
             throw new NotFoundException("Фильм с ID " + filmId + " не найден");
@@ -140,10 +139,11 @@ public class FilmDbStorage implements FilmStorage {
         if (!userExists(userId)) {
             throw new NotFoundException("Пользователь с ID " + userId + " не найден");
         }
-        if (isLikeExists(filmId, userId)) {
-            return;
+        try {
+            jdbcTemplate.update(ADD_FILM_LIKE, filmId, userId);
+        } catch (DuplicateKeyException ignored) {
+
         }
-        jdbcTemplate.update(ADD_FILM_LIKE, filmId, userId);
     }
 
     @Override
@@ -256,12 +256,6 @@ public class FilmDbStorage implements FilmStorage {
     private boolean isFilmGenreExists(Long filmId, Long genreId) {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM film_genre WHERE film_id = ? AND genre_id = ?",
                 Integer.class, filmId, genreId);
-        return count > 0;
-    }
-
-    private boolean isLikeExists(Long filmId, Long userId) {
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM film_likes WHERE film_id = ? AND user_id = ?",
-                Integer.class, filmId, userId);
         return count > 0;
     }
 

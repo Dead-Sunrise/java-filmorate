@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,10 @@ public class UserService {
         return userStorage.getCommonFriends(userId, friendId).stream().toList();
     }
 
+    public Map<Long, List<Long>> getAllUserLikes() {
+        return userStorage.getAllUserLikes();
+    }
+
     public void removeAllUsers() {
         userStorage.deleteAllUsers();
     }
@@ -40,7 +45,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userStorage.getUserById(id)
-                .orElseThrow(() -> new NotFoundException("Фильм с id " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
     }
 
     public User createUser(User user) {
