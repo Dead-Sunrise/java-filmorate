@@ -25,6 +25,12 @@ public class ReviewDbStorage {
             WHERE review_id = ?
             """;
 
+    private static final String FIND_BY_FILM_AND_USER_ID_QUERY = """
+            SELECT *
+            FROM reviews
+            WHERE film_id = ? AND user_id = ?
+            """;
+
     private static final String INSERT_QUERY = """
             INSERT INTO reviews (message, is_positive, user_id, film_id)
             VALUES (?, ?, ?, ?)
@@ -38,6 +44,7 @@ public class ReviewDbStorage {
     private static final String UPDATE_QUERY = """
             UPDATE reviews
             SET message = ?, is_positive = ?, film_id = ?
+            WHERE review_id = ?
             """;
 
     private static final String FIND_BY_FILM_ID_QUERY = """
@@ -71,8 +78,27 @@ public class ReviewDbStorage {
             WHERE review_id = ? AND user_id = ?
             """;
 
+    private static final String FIND_LIKE_OR_DISLIKE_QUERY = """
+            SELECT COUNT(*)
+            FROM review_likes
+            WHERE review_id = ? AND user_id = ?
+            """;
+
+    public static final String UPDATE_LIKE_OR_DISLIKE = """
+            UPDATE review_likes
+            SET is_like = ?
+            WHERE review_id = ? AND user_id = ?
+            """;
+
     public Optional<Review> findById(int id) {
-        return Optional.ofNullable(jdbc.queryForObject(FIND_BY_ID_QUERY, mapper, id));
+        return jdbc.query(FIND_BY_ID_QUERY, mapper, id).stream()
+                .findFirst();
+    }
+
+    public Optional<Review> findByFilmAndUserId(Review review) {
+        return jdbc.query(FIND_BY_FILM_AND_USER_ID_QUERY, mapper, review.getFilmId(),
+                        review.getUserId()).stream()
+                .findFirst();
     }
 
     public Review create(Review review) {
@@ -87,8 +113,7 @@ public class ReviewDbStorage {
         }, keyHolder);
         Integer id = keyHolder.getKeyAs(Integer.class);
         if (id == null) throw new InternalServerException("Не удалось сохранить отзыв");
-        review.setId(id);
-        return review;
+        return findById(id).get();
     }
 
     public boolean delete(int id) {
@@ -97,9 +122,10 @@ public class ReviewDbStorage {
     }
 
     public Review update(Review review) {
-        int rowsAffected = jdbc.update(UPDATE_QUERY, review.getContent(), review.getIsPositive(), review.getFilmId());
-        if (rowsAffected < 0) throw new InternalServerException("Не удалось обновить отзыв");
-        return review;
+        int rowsAffected = jdbc.update(UPDATE_QUERY, review.getContent(), review.getIsPositive(),
+                review.getFilmId(), review.getReviewId());
+        if (rowsAffected <= 0) throw new InternalServerException("Не удалось обновить отзыв");
+        return findById(review.getReviewId()).get();
     }
 
     public List<Review> findByFilmId(int filmId, int count) {
@@ -114,16 +140,25 @@ public class ReviewDbStorage {
         return jdbc.update(ADD_LIKE_OR_DISLIKE_QUERY, reviewId, userId, isLike);
     }
 
-    public int changeUseful(Review review, boolean isLike) {
+    public int updateLikeOrDislike(int reviewId, int userId, boolean isLike) {
+        return jdbc.update(UPDATE_LIKE_OR_DISLIKE, isLike, reviewId, userId);
+    }
+
+    public int changeUseful(Review review, boolean isLike, int delta) {
         if (isLike) {
-            return jdbc.update(CHANGE_USEFUL_QUERY, review.getUseful() + 1, review.getId());
+            return jdbc.update(CHANGE_USEFUL_QUERY, review.getUseful() + delta, review.getReviewId());
         }
-        return jdbc.update(CHANGE_USEFUL_QUERY, review.getUseful() - 1, review.getId());
+        return jdbc.update(CHANGE_USEFUL_QUERY, review.getUseful() - delta, review.getReviewId());
     }
 
     public boolean deleteLikeOrDislike(int reviewId, int userId) {
         int rowsAffected = jdbc.update(DELETE_LIKE_OR_DISLIKE_QUERY, reviewId, userId);
         return rowsAffected > 0;
+    }
+
+    public boolean likeOrDislikeExists(int reviewId, int userId) {
+        int rowsFound = jdbc.queryForObject(FIND_LIKE_OR_DISLIKE_QUERY, Integer.class, reviewId, userId);
+        return rowsFound > 0;
     }
 
 }
