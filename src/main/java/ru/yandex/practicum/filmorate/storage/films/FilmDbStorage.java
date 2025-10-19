@@ -59,14 +59,16 @@ public class FilmDbStorage implements FilmStorage {
             """;
 
     private static final String FIND_COMMON_FILMS = """
-            SELECT f.*, m.name AS mpa_name
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+                   f.mpa_id, f.director_id, d.name AS director_name, m.name AS mpa_name
             FROM films f
+            LEFT JOIN directors d ON f.director_id = d.director_id
             JOIN mpa_ratings m ON f.mpa_id = m.id
             WHERE f.id IN (SELECT film_id FROM film_likes WHERE user_id = ?)
             AND f.id IN (SELECT film_id FROM film_likes WHERE user_id = ?)
             ORDER BY (SELECT COUNT(*) FROM film_likes WHERE film_id = f.id) DESC
             """;
-
+    
     private static final String FIND_GENRES_BY_FILM_ID = """
             SELECT g.* FROM genres g
             JOIN film_genre fg ON g.id = fg.genre_id
@@ -77,14 +79,35 @@ public class FilmDbStorage implements FilmStorage {
             SELECT user_id FROM film_likes
             WHERE film_id = ?""";
 
+    private static final String SEARCH_FILMS_BY_TITLE = """
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+                              f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
+            FROM films f
+            LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
+            LEFT JOIN directors d ON f.director_id = d.director_id
+            WHERE LOWER(f.name) LIKE LOWER(?)
+            ORDER BY f.id""";
+    private static final String SEARCH_FILMS_BY_DIRECTOR = """
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+                              f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
+            FROM films f
+            LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
+            LEFT JOIN directors d ON f.director_id = d.director_id
+            WHERE LOWER(d.name) LIKE LOWER(?)
+            ORDER BY f.id""";
+    private static final String SEARCH_FILMS_BY_TITLE_AND_DIRECTOR = """
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+                              f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
+            FROM films f
+            LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
+            LEFT JOIN directors d ON f.director_id = d.director_id
+            WHERE LOWER(f.name) LIKE LOWER(?) OR LOWER(d.name) LIKE LOWER(?)
+            ORDER BY f.id""";
     private static final String ADD_FILM = """
             INSERT INTO films(name, description, release_date, duration, mpa_id, director_id)
             VALUES (?, ?, ?, ?, ?, ?)""";
-
     private static final String ADD_FILM_GENRE = "INSERT INTO film_genre(film_id, genre_id) VALUES(?, ?)";
-
     private static final String ADD_FILM_LIKE = "INSERT INTO film_likes(film_id, user_id) VALUES(?, ?)";
-
     private static final String UPDATE_FILM = """
             UPDATE films
             SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?, director_id = ?
@@ -116,6 +139,22 @@ public class FilmDbStorage implements FilmStorage {
 
     public Collection<Film> getPopularFilms(Integer count) {
         List<Film> films = jdbcTemplate.query(FIND_POPULAR_FILMS, filmRowMapper, count);
+        films.forEach(this::loadFilmDetails);
+        return films;
+    }
+
+    public List<Film> searchFilms(String query, String by) {
+        String search = "%" + query.toLowerCase() + "%";
+        List<Film> films;
+        if (by.equals("title")) {
+            films = jdbcTemplate.query(SEARCH_FILMS_BY_TITLE, filmRowMapper, search);
+        } else if (by.equals("director")) {
+            films = jdbcTemplate.query(SEARCH_FILMS_BY_DIRECTOR, filmRowMapper, search);
+        } else if (by.equals("title,director") || by.equals("director,title")) {
+            films = jdbcTemplate.query(SEARCH_FILMS_BY_TITLE_AND_DIRECTOR, filmRowMapper, search, search);
+        } else {
+            throw new ValidationException("Параметр поиска должен быть title или director или title,director");
+        }
         films.forEach(this::loadFilmDetails);
         return films;
     }
