@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ReviewDbStorage implements ReviewStorage{
+public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbc;
     private final ReviewRowMapper mapper;
 
@@ -89,6 +89,7 @@ public class ReviewDbStorage implements ReviewStorage{
             SET is_like = ?
             WHERE review_id = ? AND user_id = ?
             """;
+
     @Override
     public Optional<Review> findById(int id) {
         return jdbc.query(FIND_BY_ID_QUERY, mapper, id).stream()
