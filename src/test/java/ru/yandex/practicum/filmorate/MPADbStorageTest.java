@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.RatingMPA;
 import ru.yandex.practicum.filmorate.storage.mappers.MPARowMapper;
-import ru.yandex.practicum.filmorate.storage.mpa.MPADbStorage;
+import ru.yandex.practicum.filmorate.storage.films.mpa.MPADbStorage;
 
 import java.util.Collection;
 import java.util.Optional;
