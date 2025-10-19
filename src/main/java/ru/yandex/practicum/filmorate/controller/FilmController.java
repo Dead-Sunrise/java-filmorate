@@ -49,6 +49,7 @@ public class FilmController {
         log.info("/films/search?query={query}&by={by} GET Запрос на поиск фильмов по названию/директору/названию,директору");
         return filmService.searchFilms(query, by);
     }
+
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("/films POST Запрос на добавление нового фильма");
