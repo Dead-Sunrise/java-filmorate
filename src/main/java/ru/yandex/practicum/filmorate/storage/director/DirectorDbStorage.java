@@ -18,11 +18,12 @@ import java.util.Optional;
 public class DirectorDbStorage implements DirectorStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final DirectorRowMapper directorRowMapper;
 
     @Override
     public Director add(Director director) {
         String sql = "INSERT INTO directors (name) VALUES (?)";
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        var keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"director_id"});
@@ -43,14 +44,13 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Optional<Director> getById(int id) {
-        List<Director> list = jdbcTemplate.query("SELECT * FROM directors WHERE director_id=?", new DirectorRowMapper(), id);
-        if (list.isEmpty()) return Optional.empty();
-        return Optional.of(list.get(0));
+        List<Director> list = jdbcTemplate.query("SELECT * FROM directors WHERE director_id=?", directorRowMapper, id);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     @Override
     public Collection<Director> getAll() {
-        return jdbcTemplate.query("SELECT * FROM directors", new DirectorRowMapper());
+        return jdbcTemplate.query("SELECT * FROM directors", directorRowMapper);
     }
 
     @Override
