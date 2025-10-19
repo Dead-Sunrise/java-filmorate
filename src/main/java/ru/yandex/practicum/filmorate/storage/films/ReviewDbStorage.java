@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ReviewDbStorage {
+public class ReviewDbStorage implements ReviewStorage{
     private final JdbcTemplate jdbc;
     private final ReviewRowMapper mapper;
 
@@ -89,18 +89,20 @@ public class ReviewDbStorage {
             SET is_like = ?
             WHERE review_id = ? AND user_id = ?
             """;
-
+    @Override
     public Optional<Review> findById(int id) {
         return jdbc.query(FIND_BY_ID_QUERY, mapper, id).stream()
                 .findFirst();
     }
 
+    @Override
     public Optional<Review> findByFilmAndUserId(Review review) {
         return jdbc.query(FIND_BY_FILM_AND_USER_ID_QUERY, mapper, review.getFilmId(),
                         review.getUserId()).stream()
                 .findFirst();
     }
 
+    @Override
     public Review create(Review review) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
@@ -116,11 +118,13 @@ public class ReviewDbStorage {
         return findById(id).get();
     }
 
+    @Override
     public boolean delete(int id) {
         int rowsAffected = jdbc.update(DELETE_QUERY, id);
         return rowsAffected > 0;
     }
 
+    @Override
     public Review update(Review review) {
         int rowsAffected = jdbc.update(UPDATE_QUERY, review.getContent(), review.getIsPositive(),
                 review.getFilmId(), review.getReviewId());
@@ -128,22 +132,27 @@ public class ReviewDbStorage {
         return findById(review.getReviewId()).get();
     }
 
+    @Override
     public List<Review> findByFilmId(int filmId, int count) {
         return jdbc.query(FIND_BY_FILM_ID_QUERY, mapper, filmId, count);
     }
 
+    @Override
     public List<Review> findAll(int count) {
         return jdbc.query(FIND_ALL_QUERY, mapper, count);
     }
 
+    @Override
     public int addLikeOrDislike(int reviewId, int userId, boolean isLike) {
         return jdbc.update(ADD_LIKE_OR_DISLIKE_QUERY, reviewId, userId, isLike);
     }
 
+    @Override
     public int updateLikeOrDislike(int reviewId, int userId, boolean isLike) {
         return jdbc.update(UPDATE_LIKE_OR_DISLIKE, isLike, reviewId, userId);
     }
 
+    @Override
     public int changeUseful(Review review, boolean isLike, int delta) {
         if (isLike) {
             return jdbc.update(CHANGE_USEFUL_QUERY, review.getUseful() + delta, review.getReviewId());
@@ -151,14 +160,15 @@ public class ReviewDbStorage {
         return jdbc.update(CHANGE_USEFUL_QUERY, review.getUseful() - delta, review.getReviewId());
     }
 
+    @Override
     public boolean deleteLikeOrDislike(int reviewId, int userId) {
         int rowsAffected = jdbc.update(DELETE_LIKE_OR_DISLIKE_QUERY, reviewId, userId);
         return rowsAffected > 0;
     }
 
+    @Override
     public boolean likeOrDislikeExists(int reviewId, int userId) {
         int rowsFound = jdbc.queryForObject(FIND_LIKE_OR_DISLIKE_QUERY, Integer.class, reviewId, userId);
         return rowsFound > 0;
     }
-
 }
