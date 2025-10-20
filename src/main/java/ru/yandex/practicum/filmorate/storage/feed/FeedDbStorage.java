@@ -7,10 +7,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
+import ru.yandex.practicum.filmorate.storage.mappers.EventRowMapper;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -20,6 +19,7 @@ import java.util.List;
 public class FeedDbStorage implements FeedStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final EventRowMapper eventRowMapper;
 
     @Override
     public List<Event> getFeedByUserId(Long userId) {
@@ -31,7 +31,7 @@ public class FeedDbStorage implements FeedStorage {
                 "WHERE ef.user_id = ? " +
                 "ORDER BY ef.time";
 
-        return jdbcTemplate.query(sql, this::mapRowToEvent, userId);
+        return jdbcTemplate.query(sql, eventRowMapper, userId);
     }
 
     @Override
@@ -53,17 +53,6 @@ public class FeedDbStorage implements FeedStorage {
 
         event.setEventId(keyHolder.getKey().longValue());
         return event;
-    }
-
-    private Event mapRowToEvent(ResultSet rs, int rowNum) throws SQLException {
-        return Event.builder()
-                .eventId(rs.getLong("event_id"))
-                .userId(rs.getLong("user_id"))
-                .eventType(EventType.valueOf(rs.getString("event_type")))
-                .operation(Operation.valueOf(rs.getString("operation")))
-                .entityId(rs.getLong("entity_id"))
-                .timestamp(rs.getTimestamp("time").getTime())
-                .build();
     }
 
     private int getEventTypeId(EventType eventType) {
