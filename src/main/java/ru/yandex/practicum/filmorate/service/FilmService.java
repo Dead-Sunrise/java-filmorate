@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 
 import java.util.Collections;
@@ -15,13 +17,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final FeedService feedService;
 
     public void putLike(Long filmId, Long userId) {
         filmStorage.addLike(filmId, userId);
+        feedService.addEvent(userId, EventType.LIKE, Operation.ADD, filmId);
     }
 
     public void removeLike(Long filmId, Long userId) {
         filmStorage.deleteFilmLike(filmId, userId);
+        feedService.addEvent(userId, EventType.LIKE, Operation.REMOVE, filmId);
     }
 
     public void addFilmGenre(Long filmId, Long genreId) {
