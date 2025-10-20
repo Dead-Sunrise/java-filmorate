@@ -33,17 +33,20 @@ birthday DATE
 
 CREATE TABLE IF NOT EXISTS film_genre (
 film_id INTEGER REFERENCES films (id) ON DELETE CASCADE,
-genre_id INTEGER REFERENCES genres (id)
+genre_id INTEGER REFERENCES genres (id),
+PRIMARY KEY (film_id, genre_id)
 );
 
 CREATE TABLE IF NOT EXISTS friends (
 user_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
-friend_id INTEGER REFERENCES users (id) ON DELETE CASCADE
+friend_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
+PRIMARY KEY (user_id, friend_id)
 );
 
 CREATE TABLE IF NOT EXISTS film_likes (
 film_id INTEGER REFERENCES films (id) ON DELETE CASCADE,
-user_id INTEGER REFERENCES users (id) ON DELETE CASCADE
+user_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
+PRIMARY KEY (film_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -57,7 +60,9 @@ CREATE TABLE IF NOT EXISTS reviews (
 
 CREATE TABLE IF NOT EXISTS review_likes (
     review_id INTEGER REFERENCES reviews (review_id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users (id) ON DELETE CASCADE
+    user_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
+    is_like BOOLEAN NOT NULL,
+    PRIMARY KEY (review_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS event_type (

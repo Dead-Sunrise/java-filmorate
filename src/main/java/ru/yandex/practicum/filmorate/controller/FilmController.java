@@ -38,12 +38,18 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public List<Film> getCommonFilms(@RequestParam("userId") Long userId,
-                                     @RequestParam("friendId") Long friendId) {
+    public List<Film> getCommonFilms(@RequestParam("userId") Long userId, @RequestParam("friendId") Long friendId) {
         log.info("""
                 /films/common?userId={userId}&friendId={friendId}
                 GET Запрос на получение общих фильмов пользователей с ID {} и {}""", userId, friendId);
         return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query,
+                                  @RequestParam(defaultValue = "title,director") String by) {
+        log.info("/films/search?query={query}&by={by} GET Запрос на поиск фильмов по названию/директору/названию,директору");
+        return filmService.searchFilms(query, by);
     }
 
     @PostMapping
@@ -59,16 +65,19 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Long id,
-                        @PathVariable Long userId) {
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("/films/{id}/like/{userId} PUT Запрос на добавление лайка");
         filmService.putLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable Long id,
-                           @PathVariable Long userId) {
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("/films/{id}/like/{userId} DELETE Запрос на удаление лайка");
         filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam(required = false) List<String> sortBy) {
+        return filmService.getFilmsByDirector(directorId, sortBy);
     }
 }
