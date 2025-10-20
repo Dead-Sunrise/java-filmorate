@@ -36,7 +36,7 @@ public class ReviewService {
             throw new NotFoundException("Фильм не найден");
         }
         Review createdReview = storage.create(review);
-        feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.ADD, (long) createdReview.getReviewId()); // Добавить
+        feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.ADD, (long) createdReview.getReviewId());
         return createdReview;
     }
 
@@ -44,7 +44,7 @@ public class ReviewService {
         Review review = findById(id);
         boolean result = storage.delete(id);
         if (result) {
-            feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.REMOVE, (long) id); // Добавить
+            feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.REMOVE, (long) id);
         }
         return result;
     }
@@ -61,7 +61,7 @@ public class ReviewService {
             oldReview.setFilmId(review.getFilmId());
         }
         Review updatedReview = storage.update(oldReview);
-        feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.UPDATE, (long) updatedReview.getReviewId()); // Добавить
+        feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.UPDATE, (long) updatedReview.getReviewId());
         return updatedReview;
     }
 
