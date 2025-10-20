@@ -30,9 +30,11 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("/films/popular?count={count} GET Запрос на получение популярных фильмов по количеству лайков");
-        return filmService.getPopularFilms(count);
+    public List<Film> getPopulateFilms(@RequestParam(defaultValue = "10") int count,
+                                       @RequestParam(required = false) Long genreId,
+                                       @RequestParam(required = false) Integer year) {
+        log.info("/films/popular?count={limit}&genreId={genreId}&year={year} GET получения популярных фильмов: count={}, genreId={}, year={}", count, genreId, year);
+        return filmService.getPopularFilms(count, genreId, year);
     }
 
     @GetMapping("/common")
