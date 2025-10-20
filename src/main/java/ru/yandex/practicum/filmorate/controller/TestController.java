@@ -19,6 +19,9 @@ public class TestController {
 
     @PostMapping("/reset")
     public void resetDatabase() {
+        jdbcTemplate.update("DELETE FROM event_feed");
+        jdbcTemplate.update("DELETE FROM review_likes");
+        jdbcTemplate.update("DELETE FROM reviews");
         jdbcTemplate.update("DELETE FROM film_likes");
         jdbcTemplate.update("DELETE FROM film_genre");
         jdbcTemplate.update("DELETE FROM friends");
