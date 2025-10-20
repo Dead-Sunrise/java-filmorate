@@ -15,6 +15,8 @@ public interface FilmStorage {
 
     Collection<Film> getCommonFilms(Long userId, Long friendId);
 
+    List<Film> searchFilms(String query, String by);
+
     void addFilmGenre(Long filmId, Long genreId);
 
     void addLike(Long filmId, Long userId);

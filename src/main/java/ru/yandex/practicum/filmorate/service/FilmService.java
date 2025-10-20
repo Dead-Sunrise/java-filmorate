@@ -47,6 +47,13 @@ public class FilmService {
         return filmStorage.findAll().stream().toList();
     }
 
+    public List<Film> searchFilms(String query, String by) {
+        if (query == null || query.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return filmStorage.searchFilms(query.trim(), by);
+    }
+
     public Film createFilm(Film film) {
         return filmStorage.create(film);
     }
