@@ -66,37 +66,49 @@ public class FilmDbStorage implements FilmStorage {
             ORDER BY (SELECT COUNT(*) FROM film_likes WHERE film_id = f.id) DESC""";
 
 
-    private static final String FIND_POPULAR_FILMS_BY_YEAR = """
-            SELECT f.*, m.name AS mpa_name, COUNT(DISTINCT fl.user_id) AS likes_count
+    private static final String FIND_POPULAR_FILMS_BY_GENRE = """
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+            f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name,
+            COUNT(DISTINCT fl.user_id) AS likes_count
             FROM films f
+            LEFT JOIN directors d ON f.director_id = d.director_id
             JOIN mpa_ratings m ON f.mpa_id = m.id
             LEFT JOIN film_likes fl ON f.id = fl.film_id
-            WHERE EXTRACT(YEAR FROM f.release_date) = ?
-            GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name
+            JOIN film_genre fg ON f.id = fg.film_id AND fg.genre_id = ?
+            GROUP BY f.id, f.name, f.description, f.release_date, f.duration,
+            f.mpa_id, d.director_id, d.name, m.name
             ORDER BY likes_count DESC
             LIMIT ?
             """;
 
-    private static final String FIND_POPULAR_FILMS_BY_GENRE = """
-            SELECT f.*, m.name AS mpa_name, COUNT(DISTINCT fl.user_id) AS likes_count
+    private static final String FIND_POPULAR_FILMS_BY_YEAR = """
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+            f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name,
+            COUNT(DISTINCT fl.user_id) AS likes_count
             FROM films f
+            LEFT JOIN directors d ON f.director_id = d.director_id
             JOIN mpa_ratings m ON f.mpa_id = m.id
             LEFT JOIN film_likes fl ON f.id = fl.film_id
-            JOIN film_genre fg ON f.id = fg.film_id AND fg.genre_id = ?
-            GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name
+            WHERE EXTRACT(YEAR FROM f.release_date) = ?
+            GROUP BY f.id, f.name, f.description, f.release_date, f.duration,
+            f.mpa_id, d.director_id, d.name, m.name
             ORDER BY likes_count DESC
             LIMIT ?
             """;
 
     private static final String FIND_POPULAR_FILMS_BY_GENRE_AND_YEAR = """
-            SELECT f.*, m.name AS mpa_name, COUNT(DISTINCT fl.user_id) AS likes_count
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+            f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name,
+            COUNT(DISTINCT fl.user_id) AS likes_count
             FROM films f
+            LEFT JOIN directors d ON f.director_id = d.director_id
             JOIN mpa_ratings m ON f.mpa_id = m.id
             LEFT JOIN film_likes fl ON f.id = fl.film_id
             JOIN film_genre fg ON f.id = fg.film_id
             WHERE fg.genre_id = ?
             AND EXTRACT(YEAR FROM f.release_date) = ?
-            GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.name
+            GROUP BY f.id, f.name, f.description, f.release_date, f.duration,
+            f.mpa_id, d.director_id, d.name, m.name
             ORDER BY likes_count DESC
             LIMIT ?
             """;
@@ -181,7 +193,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Collection<Film> getPopularFilmsByGenreAndYear(int count, Long genreId, Integer year) {
-        List<Film> films = jdbcTemplate.query(FIND_POPULAR_FILMS_BY_GENRE_AND_YEAR, filmRowMapper,genreId, year, count);
+        List<Film> films = jdbcTemplate.query(FIND_POPULAR_FILMS_BY_GENRE_AND_YEAR, filmRowMapper, genreId, year, count);
         films.forEach(this::loadFilmDetails);
         return films;
     }
