@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.films.ReviewDbStorage;
 
@@ -16,6 +18,7 @@ public class ReviewService {
     private final ReviewDbStorage storage;
     private final FilmService filmService;
     private final UserService userService;
+    private final FeedService feedService;
 
     public Review findById(int id) {
         return storage.findById(id).orElseThrow(() -> new NotFoundException("Отзыв не найден"));
@@ -32,11 +35,18 @@ public class ReviewService {
         if (filmService.getFilmById((long) review.getFilmId()) == null) {
             throw new NotFoundException("Фильм не найден");
         }
-        return storage.create(review);
+        Review createdReview = storage.create(review);
+        feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.ADD, (long) createdReview.getReviewId()); // Добавить
+        return createdReview;
     }
 
     public boolean delete(int id) {
-        return storage.delete(id);
+        Review review = findById(id);
+        boolean result = storage.delete(id);
+        if (result) {
+            feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.REMOVE, (long) id); // Добавить
+        }
+        return result;
     }
 
     public Review update(Review review) {
@@ -50,7 +60,9 @@ public class ReviewService {
         if (review.getFilmId() != null) {
             oldReview.setFilmId(review.getFilmId());
         }
-        return storage.update(oldReview);
+        Review updatedReview = storage.update(oldReview);
+        feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.UPDATE, (long) updatedReview.getReviewId()); // Добавить
+        return updatedReview;
     }
 
     public List<Review> findByFilmId(int filmId, int count) {
