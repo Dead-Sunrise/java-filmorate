@@ -10,6 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMPA;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.films.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.storage.mappers.GenreRowMapper;
 import ru.yandex.practicum.filmorate.storage.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.storage.users.UserDbStorage;
 
@@ -22,11 +25,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @AutoConfigureTestDatabase
-@Import({UserDbStorage.class, UserRowMapper.class})
+@Import({UserDbStorage.class, UserRowMapper.class, FilmDbStorage.class, FilmRowMapper.class, GenreRowMapper.class})
 class UserDbStorageTest {
 
     @Autowired
     private UserDbStorage userDbStorage;
+
+    @Autowired
+    private FilmDbStorage filmDbStorage;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -208,13 +214,13 @@ class UserDbStorageTest {
                 .birthday(LocalDate.of(2000, 1, 1))
                 .friends(new HashSet<>())
                 .build());
-        Film film = Film.builder()
+        Film film = filmDbStorage.create(Film.builder()
                 .name("Film1")
                 .description("Description1")
                 .releaseDate(LocalDate.of(2000, 1, 1))
                 .duration(90)
                 .mpa(RatingMPA.builder().id(1L).build())
-                .build();
+                .build());
         jdbcTemplate.update("INSERT INTO film_likes(film_id, user_id) VALUES (?, ?)", film.getId(), user.getId());
         userDbStorage.deleteUserById(user.getId());
         Optional<User> deletedUser = userDbStorage.getUserById(user.getId());
