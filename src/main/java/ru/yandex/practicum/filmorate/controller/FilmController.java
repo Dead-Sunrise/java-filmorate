@@ -80,4 +80,10 @@ public class FilmController {
     public List<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam(required = false) List<String> sortBy) {
         return filmService.getFilmsByDirector(directorId, sortBy);
     }
+
+    @DeleteMapping("/{id}")
+    public void removeFilmById(@PathVariable Long id) {
+        log.info("/films/{id} DELETE Запрос на удаление фильма");
+        filmService.removeFilmById(id);
+    }
 }
