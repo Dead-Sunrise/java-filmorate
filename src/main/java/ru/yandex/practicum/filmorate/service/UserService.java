@@ -53,7 +53,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userStorage.getUserById(id)
-                .orElseThrow(() -> new NotFoundException("Фильм с id " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
     }
 
     public User createUser(User user) {

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface MPAStorage {
-    public Collection<RatingMPA> findAll();
+    Collection<RatingMPA> findAll();
 
-    public Optional<RatingMPA> getMPAById(Long id);
+    Optional<RatingMPA> getMPAById(Long id);
 }

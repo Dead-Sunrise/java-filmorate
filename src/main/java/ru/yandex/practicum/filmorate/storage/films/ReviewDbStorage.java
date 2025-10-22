@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.mappers.ReviewRowMapper;
 
@@ -24,29 +25,24 @@ public class ReviewDbStorage implements ReviewStorage {
             FROM reviews
             WHERE review_id = ?
             """;
-
     private static final String FIND_BY_FILM_AND_USER_ID_QUERY = """
             SELECT *
             FROM reviews
             WHERE film_id = ? AND user_id = ?
             """;
-
     private static final String INSERT_QUERY = """
             INSERT INTO reviews (message, is_positive, user_id, film_id)
             VALUES (?, ?, ?, ?)
             """;
-
     private static final String DELETE_QUERY = """
             DELETE FROM reviews
             WHERE review_id = ?
             """;
-
     private static final String UPDATE_QUERY = """
             UPDATE reviews
-            SET message = ?, is_positive = ?, film_id = ?
+            SET message = ?, is_positive = ?, useful = ?
             WHERE review_id = ?
             """;
-
     private static final String FIND_BY_FILM_ID_QUERY = """
             SELECT *
             FROM reviews
@@ -54,36 +50,30 @@ public class ReviewDbStorage implements ReviewStorage {
             ORDER BY useful DESC
             LIMIT ?
             """;
-
     private static final String FIND_ALL_QUERY = """
             SELECT *
             FROM reviews
             ORDER BY useful DESC
             LIMIT ?
             """;
-
     private static final String ADD_LIKE_OR_DISLIKE_QUERY = """
             INSERT INTO review_likes (review_id, user_id, is_like)
             VALUES (?, ?, ?)
             """;
-
     private static final String CHANGE_USEFUL_QUERY = """
             UPDATE reviews
             SET useful = ?
             WHERE review_id = ?
             """;
-
     private static final String DELETE_LIKE_OR_DISLIKE_QUERY = """
             DELETE FROM review_likes
             WHERE review_id = ? AND user_id = ?
             """;
-
     private static final String FIND_LIKE_OR_DISLIKE_QUERY = """
             SELECT COUNT(*)
             FROM review_likes
             WHERE review_id = ? AND user_id = ?
             """;
-
     public static final String UPDATE_LIKE_OR_DISLIKE = """
             UPDATE review_likes
             SET is_like = ?
@@ -127,9 +117,18 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review update(Review review) {
-        int rowsAffected = jdbc.update(UPDATE_QUERY, review.getContent(), review.getIsPositive(),
-                review.getFilmId(), review.getReviewId());
-        if (rowsAffected <= 0) throw new InternalServerException("Не удалось обновить отзыв");
+        Optional<Review> existingReview = findById(review.getReviewId());
+        if (existingReview.isEmpty()) {
+            throw new NotFoundException("Отзыв не найден");
+        }
+        int rowsAffected = jdbc.update(UPDATE_QUERY,
+                review.getContent(),
+                review.getIsPositive(),
+                review.getUseful(),
+                review.getReviewId());
+        if (rowsAffected <= 0) {
+            throw new NotFoundException("Отзыв не найден");
+        }
         return findById(review.getReviewId()).get();
     }
 

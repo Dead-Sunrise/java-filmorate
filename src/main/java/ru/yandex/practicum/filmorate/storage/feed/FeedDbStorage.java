@@ -29,8 +29,7 @@ public class FeedDbStorage implements FeedStorage {
                 "JOIN event_type et ON ef.type_id = et.type_id " +
                 "JOIN event_operation eo ON ef.operation_id = eo.operation_id " +
                 "WHERE ef.user_id = ? " +
-                "ORDER BY ef.time";
-
+                "ORDER BY ef.event_id";
         return jdbcTemplate.query(sql, eventRowMapper, userId);
     }
 
@@ -38,9 +37,7 @@ public class FeedDbStorage implements FeedStorage {
     public Event addEvent(Event event) {
         String sql = "INSERT INTO event_feed (user_id, type_id, operation_id, entity_id, time) " +
                 "VALUES (?, ?, ?, ?, ?)";
-
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"event_id"});
             ps.setLong(1, event.getUserId());
@@ -50,7 +47,6 @@ public class FeedDbStorage implements FeedStorage {
             ps.setTimestamp(5, Timestamp.from(Instant.ofEpochMilli(event.getTimestamp())));
             return ps;
         }, keyHolder);
-
         event.setEventId(keyHolder.getKey().longValue());
         return event;
     }

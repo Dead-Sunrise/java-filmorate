@@ -47,12 +47,10 @@ public class UserDbStorage implements UserStorage {
     private static final String FIND_FRIEND_IDS_BY_USER_ID = """
             SELECT friend_id FROM friends
             WHERE user_id = ?""";
-
     private static final String CHECK_FRIENDSHIP_EXISTS = """
             SELECT COUNT(*) FROM friends
             WHERE user_id = ? AND friend_id = ?""";
     private static final String ALL_USER_LIKES = "SELECT user_id, film_id FROM film_likes";
-
 
     @Override
     public Collection<User> findAll() {
@@ -149,7 +147,6 @@ public class UserDbStorage implements UserStorage {
             Long filmId = rs.getLong("film_id");
             userLikesMap.computeIfAbsent(userId, key -> new ArrayList<>()).add(filmId);
         });
-
         return userLikesMap;
     }
 
@@ -190,16 +187,6 @@ public class UserDbStorage implements UserStorage {
 
     private boolean isFriendshipExists(Long userId, Long friendId) {
         Integer count = jdbcTemplate.queryForObject(CHECK_FRIENDSHIP_EXISTS, Integer.class, userId, friendId);
-        return count != null && count > 0;
-    }
-
-    public boolean isFriend(Long userId, Long friendId) {
-        return isFriendshipExists(userId, friendId);
-    }
-
-    public int getFriendsCount(Long userId) {
-        String sql = "SELECT COUNT(*) FROM friends WHERE user_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId);
-        return count != null ? count : 0;
+        return count > 0;
     }
 }

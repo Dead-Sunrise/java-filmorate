@@ -1,16 +1,19 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.films.ReviewDbStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class ReviewService {
     }
 
     public Review create(Review review) {
+        validateReview(review);
         if (userService.getUserById((long) review.getUserId()) == null) {
             throw new NotFoundException("Пользователь не найден");
         }
@@ -50,18 +54,19 @@ public class ReviewService {
     }
 
     public Review update(Review review) {
-        Review oldReview = findByFilmAndUserId(review);
+        Optional<Review> existingReviewOpt = storage.findById(review.getReviewId());
+        if (existingReviewOpt.isEmpty()) {
+            throw new NotFoundException("Отзыв не найден");
+        }
+        Review oldReview = existingReviewOpt.get();
         if (StringUtils.hasText(review.getContent())) {
             oldReview.setContent(review.getContent());
         }
         if (review.getIsPositive() != null) {
             oldReview.setIsPositive(review.getIsPositive());
         }
-        if (review.getFilmId() != null) {
-            oldReview.setFilmId(review.getFilmId());
-        }
         Review updatedReview = storage.update(oldReview);
-        feedService.addEvent((long) review.getUserId(), EventType.REVIEW, Operation.UPDATE, (long) updatedReview.getReviewId());
+        feedService.addEvent((long) review.getReviewId(), EventType.REVIEW, Operation.UPDATE, (long) updatedReview.getReviewId());
         return updatedReview;
     }
 
@@ -112,4 +117,18 @@ public class ReviewService {
         }
     }
 
+    private void validateReview(Review review) {
+        if (review.getContent() == null || review.getContent().isBlank()) {
+            throw new ValidationException("Содержание отзыва не может быть пустым");
+        }
+        if (review.getIsPositive() == null) {
+            throw new ValidationException("Поле isPositive обязательно");
+        }
+        if (review.getUserId() == null) {
+            throw new ValidationException("UserId обязательно");
+        }
+        if (review.getFilmId() == null) {
+            throw new ValidationException("FilmId обязательно");
+        }
+    }
 }

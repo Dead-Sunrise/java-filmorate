@@ -91,20 +91,19 @@ public class FilmService {
 
     public List<Film> getFilmsByDirector(Long directorId, List<String> sortBy) {
         List<Film> films = filmStorage.findFilmsByDirector(directorId);
-
         if (sortBy == null || sortBy.isEmpty()) {
             return films;
         }
-
-        if (sortBy.contains("year")) {
+        if (sortBy.contains("likes") && sortBy.contains("year")) {
+            films.sort(Comparator
+                    .comparingInt((Film f) -> f.getLikes().size()).reversed()
+                    .thenComparing(Film::getReleaseDate)
+            );
+        } else if (sortBy.contains("year")) {
             films.sort(Comparator.comparing(Film::getReleaseDate));
+        } else if (sortBy.contains("likes")) {
+            films.sort(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed());
         }
-
-        if (sortBy.contains("likes")) {
-            films.sort(Comparator.comparingInt(f -> f.getLikes().size()));
-            Collections.reverse(films);
-        }
-
         return films;
     }
 

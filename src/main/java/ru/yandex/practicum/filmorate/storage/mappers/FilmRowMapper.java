@@ -19,21 +19,17 @@ public class FilmRowMapper implements RowMapper<Film> {
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
         Date releaseDate = rs.getDate("release_date");
         LocalDate releaseLocalDate = (releaseDate != null) ? releaseDate.toLocalDate() : null;
-
         RatingMPA mpa = null;
         Long mpaId = rs.getLong("mpa_id");
         if (!rs.wasNull()) {
             mpa = RatingMPA.builder().id(mpaId).name(rs.getString("mpa_name")).build();
         }
-
         Long directorId = rs.getLong("director_id");
         Director director = null;
         if (!rs.wasNull()) {
             director = new Director(directorId.intValue(), rs.getString("director_name"));
         }
-
         Set<Director> directors = (director != null) ? Set.of(director) : Collections.emptySet();
-
         return Film.builder().id(rs.getLong("film_id")).name(rs.getString("film_name")).description(rs.getString("description")).releaseDate(releaseLocalDate).duration(rs.getInt("duration")).mpa(mpa).directors(directors).build();
     }
 }

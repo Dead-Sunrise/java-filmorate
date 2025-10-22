@@ -30,20 +30,23 @@ public class ReviewController {
 
     @PostMapping
     public Review create(@RequestBody Review review) {
-        log.info("POST запрос на создание нового отзыва");
-        return service.create(review);
+        log.info("POST запрос на создание нового отзыва: filmId={}, userId={}, content={}",
+                review.getFilmId(), review.getUserId(), review.getContent());
+        Review createdReview = service.create(review);
+        log.info("Создан отзыв с ID: {}", createdReview.getReviewId());
+        return createdReview;
     }
 
     @PutMapping
     public Review update(@RequestBody Review review) {
-        log.info("PUT запрос на обновление отзыва");
+        log.info("PUT запрос на обновление отзыва ID: {}", review.getReviewId());
         return service.update(review);
     }
 
     @GetMapping
     public List<Review> findAll(
             @RequestParam(required = false) Integer filmId,
-            @RequestParam(defaultValue = "10")@Positive int count) {
+            @RequestParam(defaultValue = "10") @Positive int count) {
         if (filmId != null) {
             log.info("GET запрос на получение отзывов к фильму с id = {} в количестве = {}", filmId, count);
             return service.findByFilmId(filmId, count);

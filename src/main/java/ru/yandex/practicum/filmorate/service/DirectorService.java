@@ -34,7 +34,6 @@ public class DirectorService {
     }
 
     public void deleteDirector(int id) {
-        getById(id);
         directorStorage.delete(id);
     }
 

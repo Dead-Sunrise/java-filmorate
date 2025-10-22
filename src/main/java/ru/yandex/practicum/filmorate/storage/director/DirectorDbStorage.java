@@ -24,27 +24,25 @@ public class DirectorDbStorage implements DirectorStorage {
     public Director add(Director director) {
         String sql = "INSERT INTO directors (name) VALUES (?)";
         var keyHolder = new GeneratedKeyHolder();
-
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"director_id"});
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
-
         director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         return director;
     }
 
     @Override
     public Director update(Director director) {
-        String sql = "UPDATE directors SET name=? WHERE director_id=?";
+        String sql = "UPDATE directors SET name=? WHERE director_id = ?";
         jdbcTemplate.update(sql, director.getName(), director.getId());
         return director;
     }
 
     @Override
     public Optional<Director> getById(int id) {
-        List<Director> list = jdbcTemplate.query("SELECT * FROM directors WHERE director_id=?", directorRowMapper, id);
+        List<Director> list = jdbcTemplate.query("SELECT * FROM directors WHERE director_id = ?", directorRowMapper, id);
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
@@ -55,7 +53,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void delete(int id) {
-        String sql = "DELETE FROM directors WHERE director_id=?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update("UPDATE films SET director_id = NULL WHERE director_id = ?", id);
+        jdbcTemplate.update("DELETE FROM directors WHERE director_id = ?", id);
     }
 }
