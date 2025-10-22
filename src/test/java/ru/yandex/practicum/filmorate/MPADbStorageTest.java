@@ -3,12 +3,10 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.practicum.filmorate.model.RatingMPA;
-import ru.yandex.practicum.filmorate.storage.mappers.MPARowMapper;
 import ru.yandex.practicum.filmorate.storage.films.mpa.MPADbStorage;
 
 import java.util.Collection;
@@ -16,9 +14,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JdbcTest
-@AutoConfigureTestDatabase
-@Import({MPADbStorage.class, MPARowMapper.class})
+@SpringBootTest
+@ActiveProfiles("test")
 class MPADbStorageTest {
 
     @Autowired

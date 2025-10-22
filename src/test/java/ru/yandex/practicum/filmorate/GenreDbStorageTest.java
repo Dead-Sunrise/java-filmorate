@@ -3,22 +3,19 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.films.genres.GenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.mappers.GenreRowMapper;
 
 import java.util.Collection;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JdbcTest
-@AutoConfigureTestDatabase
-@Import({GenreDbStorage.class, GenreRowMapper.class})
+@SpringBootTest
+@ActiveProfiles("test")
 class GenreDbStorageTest {
 
     @Autowired
