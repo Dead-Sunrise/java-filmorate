@@ -26,10 +26,6 @@ public class ReviewService {
         return storage.findById(id).orElseThrow(() -> new NotFoundException("Отзыв не найден"));
     }
 
-    public Review findByFilmAndUserId(Review review) {
-        return storage.findByFilmAndUserId(review).orElseThrow(() -> new NotFoundException("Отзыв не найден"));
-    }
-
     public Review create(Review review) {
         validateReview(review);
         if (userService.getUserById((long) review.getUserId()) == null) {
@@ -65,7 +61,7 @@ public class ReviewService {
             oldReview.setIsPositive(review.getIsPositive());
         }
         Review updatedReview = storage.update(oldReview);
-        feedService.addEvent((long) review.getReviewId(), EventType.REVIEW, Operation.UPDATE, (long) updatedReview.getReviewId());
+        feedService.addEvent((long) updatedReview.getUserId(), EventType.REVIEW, Operation.UPDATE, (long) updatedReview.getReviewId());
         return updatedReview;
     }
 

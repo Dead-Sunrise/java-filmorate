@@ -30,7 +30,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private static final String FIND_ALL_FILMS = """
             SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
-                f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
+            f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
             FROM films f
             LEFT JOIN directors d ON f.director_id = d.director_id
             LEFT JOIN mpa_ratings m ON f.mpa_id = m.id""";
@@ -42,14 +42,14 @@ public class FilmDbStorage implements FilmStorage {
             WHERE f.id = ?""";
     private static final String FIND_POPULAR_FILMS = """
             SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
-                f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name,
-                COUNT(fl.user_id) AS likes_count
+            f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name,
+            COUNT(fl.user_id) AS likes_count
             FROM films f
             LEFT JOIN directors d ON f.director_id = d.director_id
             LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
             LEFT JOIN film_likes fl ON f.id = fl.film_id
             GROUP BY f.id, f.name, f.description, f.release_date, f.duration,
-                f.mpa_id, d.director_id, d.name, m.name
+            f.mpa_id, d.director_id, d.name, m.name
             ORDER BY likes_count DESC
             LIMIT ?""";
     private static final String FIND_COMMON_FILMS = """
@@ -113,6 +113,14 @@ public class FilmDbStorage implements FilmStorage {
     private static final String FIND_LIKES_BY_FILM_ID = """
             SELECT user_id FROM film_likes
             WHERE film_id = ?""";
+    private static final String SEARCH_FILMS_BY_DESCRIPTION = """
+            SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
+            f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
+            FROM films f
+            LEFT JOIN mpa_ratings m ON f.mpa_id = m.id
+            LEFT JOIN directors d ON f.director_id = d.director_id
+            WHERE LOWER(f.description) LIKE LOWER(?)
+            ORDER BY f.id DESC""";
     private static final String SEARCH_FILMS_BY_TITLE = """
             SELECT f.id AS film_id, f.name AS film_name, f.description, f.release_date, f.duration,
             f.mpa_id, d.director_id, d.name AS director_name, m.name AS mpa_name
@@ -204,8 +212,10 @@ public class FilmDbStorage implements FilmStorage {
             films = jdbcTemplate.query(SEARCH_FILMS_BY_DIRECTOR, filmRowMapper, search);
         } else if (by.equals("title,director") || by.equals("director,title")) {
             films = jdbcTemplate.query(SEARCH_FILMS_BY_TITLE_AND_DIRECTOR, filmRowMapper, search, search);
+        } else if (by.equals("description")) {
+            films = jdbcTemplate.query(SEARCH_FILMS_BY_DESCRIPTION, filmRowMapper, search);
         } else {
-            throw new ValidationException("Параметр поиска должен быть title или director или title,director");
+            throw new ValidationException("Параметр поиска должен быть description/title/director/title,director");
         }
         films.forEach(this::loadFilmDetails);
         return films;
