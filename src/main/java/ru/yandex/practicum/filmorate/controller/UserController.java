@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @GetMapping
     public List<User> findAll() {
@@ -42,6 +45,12 @@ public class UserController {
         return userService.getCommonFriends(id, friendId);
     }
 
+    @GetMapping("{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable Long id) {
+        log.info("/users/{id}/recommendations GET Запрос на получение рекомендаций фильмов для пользователя {}", id);
+        return recommendationService.getRecommendations(id);
+    }
+
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("/users POST Запрос на создание нового пользователя");
@@ -66,5 +75,11 @@ public class UserController {
                              @PathVariable Long friendId) {
         log.info("/users/{id}/friends/{friendId} DELETE Запрос на удаление пользователя из друзей");
         userService.removeFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void removeUserById(@PathVariable Long id) {
+        log.info("/users/{id} DELETE Запрос на удаление пользователя");
+        userService.removeUserById(id);
     }
 }

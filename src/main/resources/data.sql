@@ -12,3 +12,13 @@ VALUES  (1, 'Комедия'),
         (4, 'Триллер'),
         (5, 'Документальный'),
         (6, 'Боевик');
+
+MERGE INTO event_type (type_id, name)
+VALUES  (1, 'LIKE'),
+        (2, 'REVIEW'),
+        (3, 'FRIEND');
+
+MERGE INTO event_operation (operation_id, name)
+VALUES  (1, 'REMOVE'),
+        (2, 'ADD'),
+        (3, 'UPDATE');
